@@ -5,7 +5,7 @@ Django==1.8
 
 # Third-party app dependencies
 psycopg2==2.6.1
-twilio==4.5.0
+twilio==5.4.0
 whitenoise==2.0.4
 
 # Production dependencies
