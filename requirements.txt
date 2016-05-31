@@ -1,0 +1,18 @@
+# Requirements for browser-calls-django
+
+# Django (1.8 is a long-term support release)
+Django==1.8
+
+# Third-party app dependencies
+psycopg2==2.6.1
+twilio==4.5.0
+whitenoise==2.0.4
+
+# Production dependencies
+gunicorn==19.3.0
+
+# Test dependencies
+coverage==4.0
+mock==1.3.0
+model-mommy==1.2.5
+six==1.9.0
