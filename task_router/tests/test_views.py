@@ -23,7 +23,5 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content
         root = self.assertXmlDocument(content)
 
-        say = root.xpath('./Gather/Say/text()')
-
-        self.assertEquals(1, len(say), content)
-        self.assertEquals('For ACME Rockets, press one. For ACME TNT, press two.', say[0])
+        self.assertXpathValues(root, './Gather/Say/text()',
+            ('For ACME Rockets, press one. For ACME TNT, press two.'))
