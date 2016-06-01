@@ -11,4 +11,5 @@ class Command(BaseCommand):
         creator.add_worker(workspace, 'Alice', attributes={'products': ['ACME TNT']})
         creator.add_queue(workspace, 'Rockets', 'products HAS "ACME Rockets"')
         creator.add_queue(workspace, 'TNT', 'products HAS "ACME TNT"')
-        creator.add_workflow(workspace, 'Sales', callback='http://example.com/', timeout=30)
+        workflow = creator.add_workflow(workspace, 'Sales', callback='http://example.com/', timeout=30)
+        print('Configured, workflow sid: %s' % workflow.sid)

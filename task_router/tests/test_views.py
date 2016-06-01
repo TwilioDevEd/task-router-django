@@ -1,6 +1,6 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
-from unittest import skip
+
 
 class HomePageTest(TestCase, XmlTestCase):
 
@@ -23,8 +23,9 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content
         root = self.assertXmlDocument(content)
 
+        expected_text = 'For ACME Rockets, press one. For ACME TNT, press two.'
         self.assertXpathValues(root, './Gather/Say/text()',
-            ('For ACME Rockets, press one. For ACME TNT, press two.'))
+                               (expected_text))
 
     def test_enqueue(self):
         # Act
@@ -33,4 +34,4 @@ class HomePageTest(TestCase, XmlTestCase):
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
-            ('{"selected_product": "ACME Rockets"}'))
+                               ('{"selected_product": "ACME Rockets"}'))

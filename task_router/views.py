@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from twilio import twiml
-WORKFLOW_SID = 1
+from django.conf import settings
+WORKFLOW_SID = settings.WORKFLOW_SID
+
 
 def root(request):
     return render(request, 'index.html')
