@@ -31,10 +31,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 # Twilio number
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
-# TwiML Application SID
-TWIML_APPLICATION_SID = os.environ.get('TWIML_APPLICATION_SID')
-
-if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_NUMBER and TWIML_APPLICATION_SID):
+if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_NUMBER):
     missing_config_values = \
     """
     You must set the TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_NUMBER, and TWIML_APPLICATION_SID environment variables to run this app.
