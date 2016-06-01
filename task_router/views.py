@@ -1,12 +1,15 @@
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from twilio import twiml
 from django.conf import settings
 WORKFLOW_SID = settings.WORKFLOW_SID
+POST_WORK_ACTIVITY_SID = 'WAdd62089717e804041db4adc2efe4b47f'
 
 
 def root(request):
     return render(request, 'index.html')
+
 
 def incoming_call(request):
     resp = twiml.Response()
@@ -14,8 +17,15 @@ def incoming_call(request):
         g.say("For ACME Rockets, press one. For ACME TNT, press two.")
     return HttpResponse(resp)
 
+
 def enqueue(request):
     resp = twiml.Response()
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "ACME Rockets"}')
     return HttpResponse(resp)
+
+
+def assignment(request):
+    response = {"instruction": "dequeue", "from": "+155",
+                "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
+    return JsonResponse(response)

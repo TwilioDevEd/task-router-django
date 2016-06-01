@@ -1,5 +1,7 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
+from task_router.views import POST_WORK_ACTIVITY_SID
+import json
 
 
 class HomePageTest(TestCase, XmlTestCase):
@@ -35,3 +37,12 @@ class HomePageTest(TestCase, XmlTestCase):
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
                                ('{"selected_product": "ACME Rockets"}'))
+
+    def test_assignment(self):
+        # Act
+        response = self.client.get('/assignment')
+        content = response.content
+
+        expected = {"instruction": "dequeue", "from": "+155",
+                    "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
+        self.assertEquals(json.loads(content), expected)
