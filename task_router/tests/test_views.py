@@ -19,7 +19,7 @@ class HomePageTest(TestCase, XmlTestCase):
     @skip("WIP")
     def test_incoming_call(self):
         # Act
-        response = self.client.get('/')
+        response = self.client.get('/call/incoming/')
 
         root = self.assertXmlDocument(response.data)
         say = root.xpath('./Gather/say()')
