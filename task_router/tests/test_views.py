@@ -26,7 +26,6 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertXpathValues(root, './Gather/Say/text()',
             ('For ACME Rockets, press one. For ACME TNT, press two.'))
 
-    @skip("WIP")
     def test_enqueue(self):
         # Act
         response = self.client.get('/call/enqueue/')
