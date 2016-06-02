@@ -1,0 +1,68 @@
+{
+  "name": "Twilio Workspace",
+  "workers": [
+    {
+      "name": "Bob",
+      "attributes": {
+        "products": [
+          "ProgrammableSMS"
+        ],
+        "contact_uri": "${bob_number}"
+      }
+    },
+    {
+      "name": "Alice",
+      "attributes": {
+        "products": [
+          "ProgrammableVoice"
+        ],
+        "contact_uri": "${alice_number}"
+      }
+    }
+  ],
+  "activities": [
+    {
+      "name": "Offline",
+      "availability": "false"
+    },
+    {
+      "name": "Idle",
+      "availability": "true"
+    },
+    {
+      "name": "Busy",
+      "availability": "false"
+    },
+    {
+      "name": "Reserved",
+      "availability": "false"
+    }
+  ],
+  "task_queues": [
+    {
+      "name": "SMS",
+      "targetWorkers": "products HAS \"ProgrammableSMS\""
+    },
+    {
+      "name": "Voice",
+      "targetWorkers": "products HAS \"ProgrammableVoice\""
+    },
+  ],
+  "workflow": [
+    {
+      "name": "Sales",
+      "callback": "${host}/assignment",
+      "timeout": "30",
+      "routingConfiguration": [
+        {
+          "expression": "selected_product==\"ProgrammableSMS\"",
+          "targetTaskQueue": "SMS"
+        },
+        {
+          "expression": "selected_product==\"ProgrammableVoice\"",
+          "targetTaskQueue": "Voice"
+        },
+      ]
+    }
+  ]
+}
