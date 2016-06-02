@@ -24,7 +24,7 @@
                 logger("Call from: " + reservation.task.attributes.from);
                 logger("Selected product: " + reservation.task.attributes.selected_product);
                 logger("-----");
-                // reservation.accept();
+                reservation.dequeue();
             });
 
             worker.on("reservation.accepted", function(reservation) {

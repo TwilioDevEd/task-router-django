@@ -34,7 +34,7 @@ def enqueue(request):
 
 @csrf_exempt
 def assignment(request):
-    response = {"instruction": "dequeue", "from": "+155",
+    response = {"instruction": "dequeue",
                 "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
     return JsonResponse(response)
 
