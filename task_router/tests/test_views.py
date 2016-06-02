@@ -21,26 +21,47 @@ class HomePageTest(TestCase, XmlTestCase):
     # @skip("WIP")
     def test_incoming_call(self):
         # Act
-        response = self.client.get('/call/incoming/')
+        response = self.client.post('/call/incoming/')
         content = response.content
         root = self.assertXmlDocument(content)
 
-        expected_text = 'For ACME Rockets, press one. For ACME TNT, press two.'
-        self.assertXpathValues(root, './Gather/Say/text()',
-                               (expected_text))
+        expected_text = 'For ACME Rockets, press one. For ACME TNT, press any other key.'
+        self.assertXpathValues(root, './Gather/Say/text()', (expected_text))
 
-    def test_enqueue(self):
+
+    def test_enqueue_digit_1(self):
         # Act
-        response = self.client.get('/call/enqueue/')
+        response = self.client.post('/call/enqueue/', {'Digits': '1'})
         content = response.content
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
                                ('{"selected_product": "ACMERockets"}'))
 
+
+    def test_enqueue_digit_2(self):
+        # Act
+        response = self.client.post('/call/enqueue/', {'Digits': '2'})
+        content = response.content
+        root = self.assertXmlDocument(content)
+
+        self.assertXpathValues(root, './Enqueue/Task/text()',
+                               ('{"selected_product": "ACMETNT"}'))
+
+
+    def test_enqueue_digit_3(self):
+        # Act
+        response = self.client.post('/call/enqueue/', {'Digits': '3'})
+        content = response.content
+        root = self.assertXmlDocument(content)
+
+        self.assertXpathValues(root, './Enqueue/Task/text()',
+                               ('{"selected_product": "ACMETNT"}'))
+
+
     def test_assignment(self):
         # Act
-        response = self.client.get('/assignment')
+        response = self.client.post('/assignment')
         content = response.content
 
         expected = {"instruction": "dequeue",
