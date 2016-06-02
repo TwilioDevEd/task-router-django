@@ -46,7 +46,7 @@
     {
       "name": "Voice",
       "targetWorkers": "products HAS \"ProgrammableVoice\""
-    },
+    }
   ],
   "workflow": [
     {
@@ -61,7 +61,7 @@
         {
           "expression": "selected_product==\"ProgrammableVoice\"",
           "targetTaskQueue": "Voice"
-        },
+        }
       ]
     }
   ]
