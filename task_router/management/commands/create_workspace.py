@@ -16,6 +16,6 @@ class Command(BaseCommand):
         creator.add_queue(workspace, 'Rockets', 'products HAS "ACMERockets"')
         creator.add_queue(workspace, 'TNT', 'products HAS "ACMETNT"')
         workflow = creator.add_workflow(workspace, 'Sales', callback=url+'/assignment', timeout=30)
-        print('Workspace created successfully. Remember to set the environment vars:')
-        print('export WORKSPACE_SID=%s' % workspace.sid)
+        print('Configured, remember to configure the environment vars:')
+        print('export WORKSPACE=%s' % workspace.sid)
         print('export WORKFLOW_SID=%s' % workflow.sid)
