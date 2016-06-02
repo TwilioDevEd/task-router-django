@@ -43,6 +43,6 @@ class HomePageTest(TestCase, XmlTestCase):
         response = self.client.get('/assignment')
         content = response.content
 
-        expected = {"instruction": "dequeue", "from": "+155",
+        expected = {"instruction": "dequeue",
                     "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
         self.assertEquals(json.loads(content), expected)
