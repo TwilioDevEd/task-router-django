@@ -31,6 +31,9 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 # Twilio number
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
+#Workspace SID
+WORKSPACE_SID = os.environ.get('WORKSPACE_SID')
+
 # Workflow SID
 WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
 
