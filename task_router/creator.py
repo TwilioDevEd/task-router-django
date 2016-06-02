@@ -94,7 +94,7 @@ def get_workflow_json_configuration(workspace):
     rocketRuleTargets = []
     rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, None, None)
     rocketRuleTargets.append(rocketRuleTarget)
-    rocketRule = WorkflowRule('selected_product=="ACMERocket"', rocketRuleTargets, None)
+    rocketRule = WorkflowRule('selected_product=="ACMERockets"', rocketRuleTargets, None)
 
     tnt_queue = get_queue_by_name(workspace, 'TNT')
     tntRuleTargets = []
