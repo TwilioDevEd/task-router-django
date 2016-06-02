@@ -21,6 +21,11 @@ def get_workspace_by_name(name):
     return first(filter(lambda workspace: workspace.friendly_name == name, workspaces))
 
 
+def delete_workspace(name):
+    workspace = get_workspace_by_name(name)
+    build_client().workspaces.delete(workspace.sid)
+
+
 def create_workspace(name, event_callback=''):
     client = build_client()
     workspace = get_workspace_by_name(name)
