@@ -17,15 +17,15 @@ def incoming_call(request):
     resp = twiml.Response()
     with resp.gather(numDigits=1, action="/call/enqueue", method="POST") as g:
         g.say("For ACME Rockets, press one. For ACME TNT, press two.")
-    return HttpResponse(resp)
+    return HttpResponse(resp, content_type='application/xml')
 
 
 @csrf_exempt
 def enqueue(request):
     resp = twiml.Response()
-    with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
+    with resp.enqueue('abc', workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "ACMERockets"}')
-    return HttpResponse(resp)
+    return HttpResponse(resp, content_type='application/xml')
 
 
 @csrf_exempt
