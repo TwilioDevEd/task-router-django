@@ -22,8 +22,9 @@
                 logger("-----");
                 logger("You have been reserved to handle a call!");
                 logger("Call from: " + reservation.task.attributes.from);
-                logger("Selected language: " + reservation.task.attributes.selected_language);
+                logger("Selected product: " + reservation.task.attributes.selected_product);
                 logger("-----");
+                // reservation.accept();
             });
 
             worker.on("reservation.accepted", function(reservation) {
