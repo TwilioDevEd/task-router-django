@@ -5,7 +5,6 @@ from task_router import token
 
 class TokenTest(TestCase):
 
-
     def test_get_token(self):
         # given
         capability_mock = Mock()
