@@ -5,6 +5,7 @@ from .views import incoming_call
 from .views import enqueue
 from .views import assignment
 from .views import agents
+from .views import events
 
 urlpatterns = [
     # URLs for searching for and purchasing a new Twilio number
@@ -13,4 +14,5 @@ urlpatterns = [
     url(r'^call/enqueue/?$', enqueue, name='enqueue'),
     url(r'^assignment/?$', assignment, name='assignment'),
     url(r'^agents/(?P<worker_sid>\w+)/?$', agents, name='agents'),
+    url(r'^events/?$', events, name='events')
 ]

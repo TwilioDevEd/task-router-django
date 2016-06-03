@@ -5,6 +5,7 @@ from twilio.task_router.workflow_config import WorkflowConfig
 from django.conf import settings
 import json
 
+#workspace
 
 def first(items):
     return items[0] if items else None
@@ -18,8 +19,7 @@ def build_client():
 
 def get_workspace_by_name(name):
     workspaces = build_client().workspaces.list()
-    return first(filter(lambda workspace: workspace.friendly_name == name,
-                 workspaces))
+    return first(filter(lambda workspace: workspace.friendly_name == name, workspaces))
 
 
 def delete_workspace(name):
@@ -27,7 +27,7 @@ def delete_workspace(name):
     build_client().workspaces.delete(workspace.sid)
 
 
-def create_workspace(name, event_callback=''):
+def create_workspace(name, event_callback):
     client = build_client()
     workspace = get_workspace_by_name(name)
     if not workspace:
@@ -55,8 +55,7 @@ def add_worker(workspace, name, attributes):
 
 def get_activity_by_name(workspace, name):
     activities = build_client().activities(workspace.sid).list()
-    return first(filter(lambda activity: activity.friendly_name == name,
-                        activities))
+    return first(filter(lambda activity: activity.friendly_name == name, activities))
 
 
 def get_queue_by_name(workspace, name):
@@ -70,10 +69,8 @@ def add_queue(workspace, name, worker_query):
     if not queue:
         queue = client.task_queues(workspace.sid).create(
            friendly_name=name,
-           reservation_activity_sid=get_activity_by_name(workspace,
-                                                         'Reserved').sid,
-           assignment_activity_sid=get_activity_by_name(workspace,
-                                                        'Busy').sid,
+           reservation_activity_sid=get_activity_by_name(workspace, 'Reserved').sid,
+           assignment_activity_sid=get_activity_by_name(workspace, 'Busy').sid,
            target_workers=worker_query
            )
     return queue
@@ -81,11 +78,10 @@ def add_queue(workspace, name, worker_query):
 
 def get_workflow_by_name(workspace, name):
     workflows = build_client().workflows(workspace.sid).list()
-    return first(filter(lambda workflow: workflow.friendly_name == name,
-                        workflows))
+    return first(filter(lambda workflow: workflow.friendly_name == name, workflows))
 
 
-def add_workflow(workspace, name, callback='http://example.com/', timeout=300):
+def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
     client = build_client()
     workflow = get_workflow_by_name(workspace, name)
     if not workflow:
@@ -100,27 +96,17 @@ def add_workflow(workspace, name, callback='http://example.com/', timeout=300):
 
 
 def get_workflow_json_configuration(workspace):
-    default_queue = get_queue_by_name(workspace, 'Default')
-    defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
-
     rocket_queue = get_queue_by_name(workspace, 'Rockets')
     rocketRuleTargets = []
-    rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, 5, 30)
+    rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, None, None)
     rocketRuleTargets.append(rocketRuleTarget)
-    rocketRuleTargets.append(defaultRuleTarget)
-    rocketRule = WorkflowRule('selected_product=="ACMERockets"',
-                              rocketRuleTargets,
-                              None)
+    rocketRule = WorkflowRule('selected_product=="ACMERockets"', rocketRuleTargets, None)
 
     tnt_queue = get_queue_by_name(workspace, 'TNT')
     tntRuleTargets = []
-    tntRuleTarget = WorkflowRuleTarget(tnt_queue.sid, None, 5, 30)
+    tntRuleTarget = WorkflowRuleTarget(tnt_queue.sid, None, None, None)
     tntRuleTargets.append(tntRuleTarget)
-    tntRuleTargets.append(defaultRuleTarget)
-    tntRule = WorkflowRule('selected_product=="ACMETNT"',
-                           tntRuleTargets,
-                           None)
+    tntRule = WorkflowRule('selected_product=="ACMETNT"', tntRuleTargets, None)
 
-    rules = [tntRule, rocketRule]
-    config = WorkflowConfig(rules, None)
+    config = WorkflowConfig([tntRule, rocketRule], None)
     return config.to_json()

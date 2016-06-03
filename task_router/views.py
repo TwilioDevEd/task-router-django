@@ -30,7 +30,9 @@ def enqueue(request):
     digits = request.POST['Digits']
     selected_product = 'ACMERockets' if digits == '1' else 'ACMETNT'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
-        g.task('{"selected_product": "%s"}' % selected_product)
+        g.task('{"selected_product": "%s"}' % selected_product,
+               priority=5,
+               timeout=300)
     return HttpResponse(resp)
 
 
@@ -49,3 +51,9 @@ def agents(request, worker_sid):
     worker_token = worker_capability.generate_token()
 
     return render(request, 'agent.html', {'worker_token': worker_token})
+
+
+@csrf_exempt
+def events(request):
+    print("%s - %s" % (request.POST.get('EventType'),
+                       request.POST.get('EventDescription')))
