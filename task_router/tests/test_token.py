@@ -13,7 +13,7 @@ class TokenTest(TestCase):
 
         # when
         generated_token = token.generate('agent10')
-        self.assertEquals('token123', generated_token)
+        self.assertEqual('token123', generated_token)
 
         # then
         token.TwilioCapability.assert_called_with('sid321', 'auth123')

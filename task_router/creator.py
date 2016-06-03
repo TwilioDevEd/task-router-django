@@ -5,9 +5,9 @@ from twilio.task_router.workflow_config import WorkflowConfig
 from django.conf import settings
 import json
 
-#workspace
 
 def first(items):
+    items = list(items)
     return items[0] if items else None
 
 

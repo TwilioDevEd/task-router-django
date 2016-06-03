@@ -59,11 +59,11 @@ class HomePageTest(TestCase, XmlTestCase):
     def test_assignment(self):
         # Act
         response = self.client.post('/assignment')
-        content = response.content
+        content = response.content.decode('utf8')
 
         expected = {"instruction": "dequeue",
                     "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
-        self.assertEquals(json.loads(content), expected)
+        self.assertEqual(json.loads(content), expected)
 
     def test_event_persist_missed_call(self):
         # Act
@@ -75,11 +75,11 @@ class HomePageTest(TestCase, XmlTestCase):
 
         status_code = response.status_code
 
-        self.assertEquals(200, status_code)
+        self.assertEqual(200, status_code)
         missedCalls = MissedCall.objects.filter(phone_number='+266696687')
 
-        self.assertEquals(1, len(missedCalls))
-        self.assertEquals('ACMERockets', missedCalls[0].selected_product)
+        self.assertEqual(1, len(missedCalls))
+        self.assertEqual('ACMERockets', missedCalls[0].selected_product)
 
     def test_event_ignore_others(self):
         # Act
@@ -91,7 +91,7 @@ class HomePageTest(TestCase, XmlTestCase):
 
         status_code = response.status_code
 
-        self.assertEquals(200, status_code)
+        self.assertEqual(200, status_code)
         missedCalls = MissedCall.objects.filter(phone_number='+111111111')
 
-        self.assertEquals(0, len(missedCalls))
+        self.assertEqual(0, len(missedCalls))

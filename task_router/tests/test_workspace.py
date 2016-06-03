@@ -19,7 +19,7 @@ class WorkspaceTests(TestCase):
         self.router_client_mock.workspaces = workspaces_mock
 
         workspace = creator.get_workspace_by_name('My Workspace')
-        self.assertEquals(workspace1, workspace)
+        self.assertEqual(workspace1, workspace)
         self.assertTrue(workspaces_mock.list.called)
 
     @patch('task_router.creator.get_workspace_by_name')
