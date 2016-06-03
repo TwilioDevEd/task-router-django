@@ -5,6 +5,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from twilio import twiml
 from twilio.task_router import TaskRouterWorkerCapability
+from .models import MissedCall
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 WORKSPACE_SID = settings.WORKSPACE_SID
@@ -44,7 +45,8 @@ def assignment(request):
 
 
 def agents(request, worker_sid):
-    worker_capability = TaskRouterWorkerCapability(ACCOUNT_SID, AUTH_TOKEN, WORKSPACE_SID, worker_sid)
+    worker_capability = TaskRouterWorkerCapability(
+        ACCOUNT_SID, AUTH_TOKEN, WORKSPACE_SID, worker_sid)
     worker_capability.allow_activity_updates()
     worker_capability.allow_reservation_updates()
 
@@ -57,3 +59,9 @@ def agents(request, worker_sid):
 def events(request):
     print("%s - %s" % (request.POST.get('EventType'),
                        request.POST.get('EventDescription')))
+
+    MissedCall.objects.create(
+        phone_number=request.POST.get('from'),
+        selected_product=request.POST.get('selected_product'))
+
+    return HttpResponse('')
