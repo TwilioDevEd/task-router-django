@@ -14,7 +14,10 @@ POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
 
 
 def root(request):
-    return render(request, 'index.html')
+    missed_calls = MissedCall.objects.order_by('created')
+    return render(request, 'index.html', {
+        'missed_calls': missed_calls
+    })
 
 
 @csrf_exempt
@@ -31,9 +34,7 @@ def enqueue(request):
     digits = request.POST['Digits']
     selected_product = 'ACMERockets' if digits == '1' else 'ACMETNT'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
-        g.task('{"selected_product": "%s"}' % selected_product,
-               priority=5,
-               timeout=300)
+        g.task('{"selected_product": "%s"}' % selected_product)
     return HttpResponse(resp)
 
 
@@ -57,9 +58,9 @@ def agents(request, worker_sid):
 
 @csrf_exempt
 def events(request):
-    eventType = request.POST.get('EventType')
+    event_type = request.POST.get('EventType')
 
-    if eventType == 'workflow.timeout':
+    if event_type == 'workflow.timeout':
         MissedCall.objects.create(
             phone_number=request.POST.get('from'),
             selected_product=request.POST.get('selected_product'))

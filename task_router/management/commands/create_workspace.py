@@ -29,7 +29,7 @@ class Command(BaseCommand):
         creator.add_queue(workspace, 'Default', '1==1')
         workflow = creator.add_workflow(workspace, 'Sales',
                                         callback=url+'/assignment',
-                                        timeout=300)
+                                        timeout=30)
         idle = creator.get_activity_by_name(workspace, 'Idle')
         print('#########################################')
         print("Workspace 'Django Task Router' was created successfully.")

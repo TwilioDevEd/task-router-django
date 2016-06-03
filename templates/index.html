@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock title %}
+{% block title %}Missed Calls{% endblock title %}
 
 {% block content %}
-Task Router
+
+<ul>
+{% for missed_call in missed_calls %}
+  <li>{{ missed_call.selected_product }} - {{ missed_call.phone_number }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
