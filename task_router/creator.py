@@ -18,7 +18,8 @@ def build_client():
 
 def get_workspace_by_name(name):
     workspaces = build_client().workspaces.list()
-    return first(filter(lambda workspace: workspace.friendly_name == name, workspaces))
+    return first(filter(lambda workspace: workspace.friendly_name == name,
+                 workspaces))
 
 
 def delete_workspace(name):
@@ -54,7 +55,8 @@ def add_worker(workspace, name, attributes):
 
 def get_activity_by_name(workspace, name):
     activities = build_client().activities(workspace.sid).list()
-    return first(filter(lambda activity: activity.friendly_name == name, activities))
+    return first(filter(lambda activity: activity.friendly_name == name,
+                        activities))
 
 
 def get_queue_by_name(workspace, name):
@@ -68,8 +70,10 @@ def add_queue(workspace, name, worker_query):
     if not queue:
         queue = client.task_queues(workspace.sid).create(
            friendly_name=name,
-           reservation_activity_sid=get_activity_by_name(workspace, 'Reserved').sid,
-           assignment_activity_sid=get_activity_by_name(workspace, 'Busy').sid,
+           reservation_activity_sid=get_activity_by_name(workspace,
+                                                         'Reserved').sid,
+           assignment_activity_sid=get_activity_by_name(workspace,
+                                                        'Busy').sid,
            target_workers=worker_query
            )
     return queue
@@ -77,7 +81,8 @@ def add_queue(workspace, name, worker_query):
 
 def get_workflow_by_name(workspace, name):
     workflows = build_client().workflows(workspace.sid).list()
-    return first(filter(lambda workflow: workflow.friendly_name == name, workflows))
+    return first(filter(lambda workflow: workflow.friendly_name == name,
+                        workflows))
 
 
 def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
@@ -99,7 +104,9 @@ def get_workflow_json_configuration(workspace):
     rocketRuleTargets = []
     rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, None, None)
     rocketRuleTargets.append(rocketRuleTarget)
-    rocketRule = WorkflowRule('selected_product=="ACMERockets"', rocketRuleTargets, None)
+    rocketRule = WorkflowRule('selected_product=="ACMERockets"',
+                              rocketRuleTargets,
+                              None)
 
     tnt_queue = get_queue_by_name(workspace, 'TNT')
     tntRuleTargets = []
@@ -107,5 +114,9 @@ def get_workflow_json_configuration(workspace):
     tntRuleTargets.append(tntRuleTarget)
     tntRule = WorkflowRule('selected_product=="ACMETNT"', tntRuleTargets, None)
 
-    config = WorkflowConfig([tntRule, rocketRule], None)
+    default_queue = get_queue_by_name(workspace, 'Default')
+    defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
+
+    rules = [tntRule, rocketRule]
+    config = WorkflowConfig(rules, defaultRuleTarget)
     return config.to_json()

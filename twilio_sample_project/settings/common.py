@@ -37,6 +37,9 @@ WORKSPACE_SID = os.environ.get('WORKSPACE_SID')
 # Workflow SID
 WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
 
+# Post work Activity SID
+POST_WORK_ACTIVITY_SID = os.environ.get('POST_WORK_ACTIVITY_SID')
+
 if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_NUMBER):
     missing_config_values = \
     """
