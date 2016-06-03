@@ -57,11 +57,11 @@ def agents(request, worker_sid):
 
 @csrf_exempt
 def events(request):
-    print("%s - %s" % (request.POST.get('EventType'),
-                       request.POST.get('EventDescription')))
+    eventType = request.POST.get('EventType')
 
-    MissedCall.objects.create(
-        phone_number=request.POST.get('from'),
-        selected_product=request.POST.get('selected_product'))
+    if eventType == 'workflow.timeout':
+        MissedCall.objects.create(
+            phone_number=request.POST.get('from'),
+            selected_product=request.POST.get('selected_product'))
 
     return HttpResponse('')

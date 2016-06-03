@@ -65,11 +65,10 @@ class HomePageTest(TestCase, XmlTestCase):
                     "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
         self.assertEquals(json.loads(content), expected)
 
-    def test_events(self):
+    def test_event_persist_missed_call(self):
         # Act
         response = self.client.post('/events', {
             'EventType': 'workflow.timeout',
-            'call_sid': 'CAa944b722d21a4d4477170fa8f2468b46',
             'from': '+266696687',
             'selected_product': 'ACMERockets'
         })
@@ -81,3 +80,18 @@ class HomePageTest(TestCase, XmlTestCase):
 
         self.assertEquals(1, len(missedCalls))
         self.assertEquals('ACMERockets', missedCalls[0].selected_product)
+
+    def test_event_ignore_others(self):
+        # Act
+        response = self.client.post('/events', {
+            'EventType': 'other',
+            'from': '+111111111',
+            'selected_product': 'ACMERockets'
+        })
+
+        status_code = response.status_code
+
+        self.assertEquals(200, status_code)
+        missedCalls = MissedCall.objects.filter(phone_number='+111111111')
+
+        self.assertEquals(0, len(missedCalls))
