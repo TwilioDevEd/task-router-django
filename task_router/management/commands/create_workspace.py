@@ -15,11 +15,11 @@ class Command(BaseCommand):
         bob_number = options['bob_number']
         alice_number = options['alice_number']
         workspace = creator.create_workspace('Django Task Router')
-        creator.add_worker(workspace, 'Bob',
+        bob = creator.add_worker(workspace, 'Bob',
                            attributes={
                              'products': ['ACMERockets'],
                              'contact_uri': bob_number})
-        creator.add_worker(workspace, 'Alice',
+        alice = creator.add_worker(workspace, 'Alice',
                            attributes={
                              'products': ['AACMETNT'],
                              'contact_uri': alice_number})
@@ -30,7 +30,13 @@ class Command(BaseCommand):
                                         callback=url+'/assignment',
                                         timeout=30)
         idle = creator.get_activity_by_name(workspace, 'Idle')
-        print('Configured, remember to configure the environment vars:')
+        print('#########################################')
+        print("Workspace 'Django Task Router' was created successfully.")
+        print('#########################################')
+        print('You have to set the following environment vars:')
         print('export WORKSPACE_SID=%s' % workspace.sid)
         print('export WORKFLOW_SID=%s' % workflow.sid)
         print('export POST_WORK_ACTIVITY_SID=%s' % idle.sid)
+        print('#########################################')
+        print('To access agent Bob\'s page > http://localhost:8000/agents/%s' % bob.sid)
+        print('To access agent Alice\'s page > http://localhost:8000/agents/%s' % alice.sid)

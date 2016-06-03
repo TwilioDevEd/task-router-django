@@ -85,7 +85,7 @@ def get_workflow_by_name(workspace, name):
                         workflows))
 
 
-def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
+def add_workflow(workspace, name, callback='http://example.com/', timeout=600):
     client = build_client()
     workflow = get_workflow_by_name(workspace, name)
     if not workflow:
@@ -102,7 +102,7 @@ def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
 def get_workflow_json_configuration(workspace):
     rocket_queue = get_queue_by_name(workspace, 'Rockets')
     rocketRuleTargets = []
-    rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, None, None)
+    rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, 5, 3)
     rocketRuleTargets.append(rocketRuleTarget)
     rocketRule = WorkflowRule('selected_product=="ACMERockets"',
                               rocketRuleTargets,
@@ -110,7 +110,7 @@ def get_workflow_json_configuration(workspace):
 
     tnt_queue = get_queue_by_name(workspace, 'TNT')
     tntRuleTargets = []
-    tntRuleTarget = WorkflowRuleTarget(tnt_queue.sid, None, None, None)
+    tntRuleTarget = WorkflowRuleTarget(tnt_queue.sid, None, 5, 3)
     tntRuleTargets.append(tntRuleTarget)
     tntRule = WorkflowRule('selected_product=="ACMETNT"', tntRuleTargets, None)
 
