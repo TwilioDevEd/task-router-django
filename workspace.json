@@ -1,5 +1,6 @@
 {
   "name": "Twilio Workspace",
+  "event_callback": "%(host)s/events",
   "workers": [
     {
       "name": "Bob",
@@ -7,7 +8,7 @@
         "products": [
           "ProgrammableSMS"
         ],
-        "contact_uri": "${bob_number}"
+        "contact_uri": "%(bob_number)s"
       }
     },
     {
@@ -16,7 +17,7 @@
         "products": [
           "ProgrammableVoice"
         ],
-        "contact_uri": "${alice_number}"
+        "contact_uri": "%(alice_number)s"
       }
     }
   ],
@@ -44,14 +45,17 @@
       "targetWorkers": "products HAS \"ProgrammableSMS\""
     },
     {
+      "name": "Default",
+      "targetWorkers": "1==1"
+    },
+    {
       "name": "Voice",
       "targetWorkers": "products HAS \"ProgrammableVoice\""
     }
   ],
-  "workflow": [
-    {
+  "workflow": {
       "name": "Sales",
-      "callback": "${host}/assignment",
+      "callback": "%(host)s/assignment",
       "timeout": "30",
       "routingConfiguration": [
         {
@@ -63,6 +67,5 @@
           "targetTaskQueue": "Voice"
         }
       ]
-    }
-  ]
+  }
 }

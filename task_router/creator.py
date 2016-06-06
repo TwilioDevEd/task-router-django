@@ -81,7 +81,8 @@ def get_workflow_by_name(workspace, name):
     return first(filter(lambda workflow: workflow.friendly_name == name, workflows))
 
 
-def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
+def add_workflow(workspace, name, callback='http://example.com/',
+                 timeout=30, configuration=None):
     client = build_client()
     workflow = get_workflow_by_name(workspace, name)
     if not workflow:
@@ -90,29 +91,25 @@ def add_workflow(workspace, name, callback='http://example.com/', timeout=30):
             assignment_callback_url=callback,
             fallback_assignment_callback_url=callback,
             task_reservation_timeout=str(timeout),
-            configuration=get_workflow_json_configuration(workspace),
+            configuration=get_workflow_json_configuration(workspace,
+                                                          configuration),
             )
     return workflow
 
 
-def get_workflow_json_configuration(workspace):
+def get_workflow_json_configuration(workspace, configuration):
     default_queue = get_queue_by_name(workspace, 'Default')
     defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
 
-    rocket_queue = get_queue_by_name(workspace, 'Rockets')
-    rocketRuleTargets = []
-    rocketRuleTarget = WorkflowRuleTarget(rocket_queue.sid, None, 5, 30)
-    rocketRuleTargets.append(rocketRuleTarget)
-    rocketRuleTargets.append(defaultRuleTarget)
+    rules = []
+    for rule in configuration:
+        queue = get_queue_by_name(workspace, rule['targetTaskQueue'])
+        queueRuleTargets = []
+        queueRuleTarget = WorkflowRuleTarget(queue.sid, None, 5, 30)
+        queueRuleTargets.append(queueRuleTarget)
+        queueRuleTargets.append(defaultRuleTarget)
+        rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
 
-    rocketRule = WorkflowRule('selected_product=="ACMERockets"', rocketRuleTargets, None)
-
-    tnt_queue = get_queue_by_name(workspace, 'TNT')
-    tntRuleTargets = []
-    tntRuleTarget = WorkflowRuleTarget(tnt_queue.sid, None, 5, 30)
-    tntRuleTargets.append(tntRuleTarget)
-    tntRuleTargets.append(defaultRuleTarget)
-    tntRule = WorkflowRule('selected_product=="ACMETNT"', tntRuleTargets, None)
-
-    config = WorkflowConfig([tntRule, rocketRule], None)
+    config = WorkflowConfig(rules, None)
+    print(config.to_json())
     return config.to_json()
