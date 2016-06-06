@@ -11,6 +11,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.messages import constants as messages
 
 import os
 
@@ -31,7 +32,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 # Twilio number
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
-#Workspace SID
+# Workspace SID
 WORKSPACE_SID = os.environ.get('WORKSPACE_SID')
 
 # Workflow SID
@@ -41,9 +42,9 @@ WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
 POST_WORK_ACTIVITY_SID = os.environ.get('POST_WORK_ACTIVITY_SID')
 
 if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_NUMBER):
-    missing_config_values = \
-    """
-    You must set the TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_NUMBER environment variables to run this app.
+    missing_config_values = """
+    You must set the TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_NUMBER
+    environment variables to run this app.
     Consult the README for instructions on how to find them.
     """
     raise ImproperlyConfigured(missing_config_values)
@@ -135,7 +136,6 @@ STATIC_URL = '/static/'
 
 # Messages settings for Bootstrap 3
 
-from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
