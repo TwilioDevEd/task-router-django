@@ -23,17 +23,17 @@ class Command(BaseCommand):
         workspace = creator.create_workspace(workspace_json['name'],
                                              workspace_json['event_callback'])
         for worker in workspace_json['workers']:
-            creator.add_worker(workspace, worker['name'],
-                               attributes=worker['attributes'])
+            workspace.add_worker(worker['name'],
+                                 attributes=worker['attributes'])
         for task_queue in workspace_json['task_queues']:
-            creator.add_queue(workspace, task_queue['name'],
-                              task_queue['targetWorkers'])
+            workspace.add_queue(task_queue['name'],
+                                task_queue['targetWorkers'])
         workflow_json = workspace_json['workflow']
-        workflow = creator.add_workflow(workspace, workflow_json['name'],
-                                        workflow_json['callback'],
-                                        workflow_json['timeout'],
-                                        workflow_json['routingConfiguration'])
-        idle = creator.get_activity_by_name(workspace, 'Idle')
+        workflow = workspace.add_workflow(workflow_json['name'],
+                                          workflow_json['callback'],
+                                          workflow_json['timeout'],
+                                          workflow_json['routingConfiguration'])
+        idle = workspace.get_activity_by_name('Idle')
         print('#########################################')
         print("Workspace 'Django Task Router' was created successfully.")
         print('#########################################')
