@@ -24,7 +24,7 @@ def root(request):
 def incoming_call(request):
     resp = twiml.Response()
     with resp.gather(numDigits=1, action="/call/enqueue", method="POST") as g:
-        g.say("For ACME Rockets, press one. For ACME TNT, press any other key.")
+        g.say("For Programmable SMS, press one. For Voice, press any other key.")
     return HttpResponse(resp)
 
 
@@ -32,7 +32,7 @@ def incoming_call(request):
 def enqueue(request):
     resp = twiml.Response()
     digits = request.POST['Digits']
-    selected_product = 'ACMERockets' if digits == '1' else 'ACMETNT'
+    selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "%s"}' % selected_product)
     return HttpResponse(resp)
