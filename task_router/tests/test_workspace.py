@@ -1,14 +1,14 @@
 from django.test import TestCase
 from mock import Mock, patch
-from task_router import creator
-from task_router.creator import Workspace
+from task_router import workspace
+from task_router.workspace import Workspace
 
 
 class WorkspaceTests(TestCase):
 
     def setUp(self):
         self.router_client_mock = Mock()
-        creator.build_client = Mock(return_value=self.router_client_mock)
+        workspace.build_client = Mock(return_value=self.router_client_mock)
 
     def test_get_workspace(self):
         workspaces_mock = Mock()
@@ -19,11 +19,11 @@ class WorkspaceTests(TestCase):
         workspaces_mock.list.return_value = [workspace1, workspace2]
         self.router_client_mock.workspaces = workspaces_mock
 
-        workspace = creator.get_workspace_by_name('My Workspace')
-        self.assertEqual(workspace1, workspace)
+        workspace_instance = workspace.get_workspace_by_name('My Workspace')
+        self.assertEqual(workspace1, workspace_instance)
         self.assertTrue(workspaces_mock.list.called)
 
-    @patch('task_router.creator.get_workspace_by_name')
+    @patch('task_router.workspace.get_workspace_by_name')
     def test_delete_workspace(self, get_workspace_mock):
         workspaces_mock = Mock()
         workspace1 = Mock()
@@ -31,16 +31,16 @@ class WorkspaceTests(TestCase):
         get_workspace_mock.return_value = workspace1
         self.router_client_mock.workspaces = workspaces_mock
 
-        creator.delete_workspace('My Workspace')
+        workspace.delete_workspace('My Workspace')
         workspaces_mock.delete.assert_called_with(workspace1.sid)
 
-    @patch('task_router.creator.get_workspace_by_name')
+    @patch('task_router.workspace.get_workspace_by_name')
     def test_create_workspace(self, get_workspace_mock):
         workspaces_mock = Mock()
         get_workspace_mock.return_value = None
         self.router_client_mock.workspaces = workspaces_mock
 
-        creator.create_workspace('My Workspace', event_callback='\\')
+        workspace.create_workspace('My Workspace', event_callback='\\')
         workspaces_mock.create.assert_called_with(event_callback_url='\\',
                                                   friendly_name='My Workspace',
                                                   template=None)
