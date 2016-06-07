@@ -47,10 +47,13 @@ class WorkspaceTests(TestCase):
 
     def test_add_worker(self):
         workers_mock = Mock()
+        workspace = Workspace(Mock())
+        workspace.get_activity_by_name = lambda x: Mock(sid='choosenActivity')
         self.router_client_mock.workers.return_value = workers_mock
 
-        Workspace(Mock()).add_worker('Bob One', attributes={'product': 'Test'})
+        workspace.add_worker('Bob One', attributes={'product': 'Test'})
         workers_mock.create.assert_called_with(
+                activity_sid='choosenActivity',
                 attributes='{"product": "Test"}', friendly_name='Bob One')
 
     def test_add_queue(self):

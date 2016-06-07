@@ -46,6 +46,7 @@ class Workspace():
 
     def add_worker(self, name, attributes):
         worker = self.client.workers(self.sid).create(
+            activity_sid=self.get_activity_by_name('Idle').sid,
             friendly_name=name,
             attributes=json.dumps(attributes))
         return worker
