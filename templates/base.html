@@ -7,13 +7,15 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>{% block title %}{% endblock title %} - Task Router</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
     <!-- CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-k2/8zcNbxVIh5mnQ52A0r3a6jAgMGxFJFE2707UxGCk= sha512-ZV9KawG2Legkwp3nAlxLIVFudTauWuBpC10uEafMHYL0Sarrz5A7G79kXh5+5+woxQ5HM559XX2UZjMJ36Wplg==" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static "css/task-router.css" %}"/>
 
     {% block page_css %}{% endblock %}
   </head>
@@ -39,15 +41,16 @@
       </div>
     </nav>
 
-    {% block content %}{% endblock content %}
+     {% block content %}{% endblock content %}
 
-    <div class="container">
-
-      <footer>
-        <p>&copy; Your Company 2015</p>
-      </footer>
-
-    </div> <!-- /container -->
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">
+                Made with <i class="fa fa-heart"></i> by your pals
+                <a href="http://www.twilio.com">@twilio</a>
+            </p>
+        </div>
+    </footer>
 
     <!-- JavaScript -->
     <script src="//static.twilio.com/libs/twiliojs/1.2/twilio.min.js"></script>
