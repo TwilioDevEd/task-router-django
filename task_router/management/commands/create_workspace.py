@@ -16,6 +16,10 @@ class Command(BaseCommand):
             json_string = json_file.read()
             json_string = json_string % options
             workspace_json = json.loads(json_string)
+        try:
+            creator.delete_workspace(workspace_json['name'])
+        except:
+            pass
         workspace = creator.create_workspace(workspace_json['name'],
                                              workspace_json['event_callback'])
         for worker in workspace_json['workers']:

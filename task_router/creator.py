@@ -38,18 +38,11 @@ def create_workspace(name, event_callback):
     return workspace
 
 
-def get_worker_by_name(workspace, name):
-    workers = build_client().workers(workspace.sid).list()
-    return first(filter(lambda worker: worker.friendly_name == name, workers))
-
-
 def add_worker(workspace, name, attributes):
     client = build_client()
-    worker = get_worker_by_name(workspace, name)
-    if not worker:
-        worker = client.workers(workspace.sid).create(
-            friendly_name=name,
-            attributes=json.dumps(attributes))
+    worker = client.workers(workspace.sid).create(
+        friendly_name=name,
+        attributes=json.dumps(attributes))
     return worker
 
 
@@ -65,35 +58,26 @@ def get_queue_by_name(workspace, name):
 
 def add_queue(workspace, name, worker_query):
     client = build_client()
-    queue = get_queue_by_name(workspace, name)
-    if not queue:
-        queue = client.task_queues(workspace.sid).create(
-           friendly_name=name,
-           reservation_activity_sid=get_activity_by_name(workspace, 'Reserved').sid,
-           assignment_activity_sid=get_activity_by_name(workspace, 'Busy').sid,
-           target_workers=worker_query
-           )
+    queue = client.task_queues(workspace.sid).create(
+       friendly_name=name,
+       reservation_activity_sid=get_activity_by_name(workspace, 'Reserved').sid,
+       assignment_activity_sid=get_activity_by_name(workspace, 'Busy').sid,
+       target_workers=worker_query
+       )
     return queue
-
-
-def get_workflow_by_name(workspace, name):
-    workflows = build_client().workflows(workspace.sid).list()
-    return first(filter(lambda workflow: workflow.friendly_name == name, workflows))
 
 
 def add_workflow(workspace, name, callback='http://example.com/',
                  timeout=30, configuration=None):
     client = build_client()
-    workflow = get_workflow_by_name(workspace, name)
-    if not workflow:
-        workflow = client.workflows(workspace.sid).create(
-            friendly_name=name,
-            assignment_callback_url=callback,
-            fallback_assignment_callback_url=callback,
-            task_reservation_timeout=str(timeout),
-            configuration=get_workflow_json_configuration(workspace,
-                                                          configuration),
-            )
+    workflow = client.workflows(workspace.sid).create(
+        friendly_name=name,
+        assignment_callback_url=callback,
+        fallback_assignment_callback_url=callback,
+        task_reservation_timeout=str(timeout),
+        configuration=get_workflow_json_configuration(workspace,
+                                                      configuration),
+        )
     return workflow
 
 

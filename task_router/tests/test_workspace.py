@@ -44,24 +44,8 @@ class WorkspaceTests(TestCase):
                                                   friendly_name='My Workspace',
                                                   template=None)
 
-    def test_get_worker(self):
+    def test_add_worker(self):
         workers_mock = Mock()
-        worker1 = Mock()
-        worker1.friendly_name = 'Bob One'
-        worker2 = Mock()
-        worker2.friendly_name = 'Bob Other'
-        workers_mock.list.return_value = [worker1, worker2]
-        self.router_client_mock.workers.return_value = workers_mock
-        workspace = Mock()
-
-        worker = creator.get_worker_by_name(workspace, 'Bob One')
-        self.assertEqual(worker1, worker)
-        self.assertTrue(workers_mock.list.called)
-
-    @patch('task_router.creator.get_worker_by_name')
-    def test_add_worker(self, get_worker_mock):
-        workers_mock = Mock()
-        get_worker_mock.return_value = None
         self.router_client_mock.workers.return_value = workers_mock
 
         creator.add_worker(Mock(), 'Bob One', attributes={'product': 'Test'})
@@ -84,12 +68,9 @@ class WorkspaceTests(TestCase):
 
     @patch('task_router.creator.get_workflow_json_configuration')
     @patch('task_router.creator.get_queue_by_name')
-    @patch('task_router.creator.get_workflow_by_name')
-    def test_add_workflow(self, get_workflow_mock, get_queue_mock,
-                          get_configuration_mock):
+    def test_add_workflow(self, get_queue_mock, get_configuration_mock):
         get_configuration_mock.return_value = '{}'
         get_queue_mock.return_value = Mock(sid='123')
-        get_workflow_mock.return_value = None
         workflows_mock = Mock()
         self.router_client_mock.workflows.return_value = workflows_mock
         configuration = [{'targetTaskQueue': 'Default', 'expression': '1==1'}]
