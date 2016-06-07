@@ -111,5 +111,4 @@ def get_workflow_json_configuration(workspace, configuration):
         rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
 
     config = WorkflowConfig(rules, None)
-    print(config.to_json())
     return config.to_json()
