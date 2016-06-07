@@ -36,7 +36,7 @@ class HomePageTest(TestCase, XmlTestCase):
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
-                               ('{"selected_product": "ProgrammableSMS"}'))
+                               ('{"selected_product": "Programmable SMS"}'))
 
     def test_enqueue_digit_2(self):
         # Act

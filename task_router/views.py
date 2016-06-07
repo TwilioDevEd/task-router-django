@@ -33,7 +33,7 @@ def incoming_call(request):
 def enqueue(request):
     resp = twiml.Response()
     digits = request.POST['Digits']
-    selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
+    selected_product = 'Programmable SMS' if digits == '1' else 'ProgrammableVoice'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "%s"}' % selected_product)
     return HttpResponse(resp)
@@ -68,3 +68,6 @@ def events(request):
             selected_product=task_attributes['selected_product'])
 
     return HttpResponse('')
+
+def phone_format(n):
+    return format(int(n[:-1]), ",").replace(",", "-") + n[-1]

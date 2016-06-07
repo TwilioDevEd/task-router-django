@@ -5,20 +5,14 @@
 {% block content %}
 <div class="container full-height-container">
     <div class="panel panel-default">
-      <div class="panel-heading">Missed Calls</div
+      <div class="panel-heading"><strong>Missed calls</strong> <span class="text-muted">Product/Number<span></div>
       <!-- Table -->
       <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Number</th>
-            </tr>
-        </thead>
         <tbody>
           {% for missed_call in missed_calls %}
             <tr>
-                <td>{{ missed_call.selected_product }}</td>
-                <td>{{ missed_call.phone_number }}</td>
+                <td><strong>{{ missed_call.selected_product }}</strong></td>
+                <td><a href="tel:{{ missed_call.phone_number }}">{{ missed_call.formatted_phone }}</a></td>
             </tr>
           {% endfor %}
         </tbody>

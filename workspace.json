@@ -6,7 +6,7 @@
       "name": "Bob",
       "attributes": {
         "products": [
-          "ProgrammableSMS"
+          "Programmable SMS"
         ],
         "contact_uri": "%(bob_number)s"
       }
@@ -42,7 +42,7 @@
   "task_queues": [
     {
       "name": "SMS",
-      "targetWorkers": "products HAS \"ProgrammableSMS\""
+      "targetWorkers": "products HAS \"Programmable SMS\""
     },
     {
       "name": "Default",
@@ -59,7 +59,7 @@
       "timeout": "30",
       "routingConfiguration": [
         {
-          "expression": "selected_product==\"ProgrammableSMS\"",
+          "expression": "selected_product==\"Programmable SMS\"",
           "targetTaskQueue": "SMS"
         },
         {
