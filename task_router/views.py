@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from twilio import twiml
 from twilio.task_router import TaskRouterWorkerCapability
 from .models import MissedCall
+import json
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 WORKSPACE_SID = settings.WORKSPACE_SID
@@ -35,6 +36,7 @@ def enqueue(request):
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "%s"}' % selected_product)
+    print(resp)
     return HttpResponse(resp)
 
 
@@ -61,8 +63,9 @@ def events(request):
     event_type = request.POST.get('EventType')
 
     if event_type == 'workflow.timeout':
+        task_attributes = json.loads(request.POST['TaskAttributes'])
         MissedCall.objects.create(
-            phone_number=request.POST.get('from'),
-            selected_product=request.POST.get('selected_product'))
+            phone_number=task_attributes['from'],
+            selected_product=task_attributes['selected_product'])
 
     return HttpResponse('')
