@@ -36,7 +36,6 @@ def enqueue(request):
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
     with resp.enqueue(None, workflowSid=WORKFLOW_SID) as g:
         g.task('{"selected_product": "%s"}' % selected_product)
-    print(resp)
     return HttpResponse(resp)
 
 

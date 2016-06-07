@@ -26,7 +26,7 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content
         root = self.assertXmlDocument(content)
 
-        expected_text = 'For ACME Rockets, press one. For ACME TNT, press any other key.'
+        expected_text = 'For Programmable SMS, press one. For Voice, press any other key.'
         self.assertXpathValues(root, './Gather/Say/text()', (expected_text))
 
     def test_enqueue_digit_1(self):
@@ -36,7 +36,7 @@ class HomePageTest(TestCase, XmlTestCase):
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
-                               ('{"selected_product": "ACMERockets"}'))
+                               ('{"selected_product": "ProgrammableSMS"}'))
 
     def test_enqueue_digit_2(self):
         # Act
@@ -45,7 +45,7 @@ class HomePageTest(TestCase, XmlTestCase):
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
-                               ('{"selected_product": "ACMETNT"}'))
+                               ('{"selected_product": "ProgrammableVoice"}'))
 
     def test_enqueue_digit_3(self):
         # Act
@@ -54,7 +54,7 @@ class HomePageTest(TestCase, XmlTestCase):
         root = self.assertXmlDocument(content)
 
         self.assertXpathValues(root, './Enqueue/Task/text()',
-                               ('{"selected_product": "ACMETNT"}'))
+                               ('{"selected_product": "ProgrammableVoice"}'))
 
     def test_assignment(self):
         # Act
@@ -69,8 +69,10 @@ class HomePageTest(TestCase, XmlTestCase):
         # Act
         response = self.client.post('/events', {
             'EventType': 'workflow.timeout',
-            'from': '+266696687',
-            'selected_product': 'ACMERockets'
+            'TaskAttributes': '''
+            {"from": "+266696687",
+            "selected_product": "ACMERockets"}
+            '''
         })
 
         status_code = response.status_code
