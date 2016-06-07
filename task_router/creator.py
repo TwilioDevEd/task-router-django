@@ -35,64 +35,62 @@ def create_workspace(name, event_callback):
                 friendly_name=name,
                 event_callback_url=event_callback,
                 template=None)
-    return workspace
+    return Workspace(workspace)
 
 
-def add_worker(workspace, name, attributes):
-    client = build_client()
-    worker = client.workers(workspace.sid).create(
-        friendly_name=name,
-        attributes=json.dumps(attributes))
-    return worker
+class Workspace():
 
+    def __init__(self, workspace):
+        self.sid = workspace.sid
+        self.client = build_client()
 
-def get_activity_by_name(workspace, name):
-    activities = build_client().activities(workspace.sid).list()
-    return first(filter(lambda activity: activity.friendly_name == name, activities))
+    def add_worker(self, name, attributes):
+        worker = self.client.workers(self.sid).create(
+            friendly_name=name,
+            attributes=json.dumps(attributes))
+        return worker
 
+    def add_queue(self, name, worker_query):
+        reservation_activity = self.get_activity_by_name('Reserved')
+        assignment_activity = self.get_activity_by_name('Busy')
+        queue = self.client.task_queues(self.sid).create(
+                friendly_name=name,
+                reservation_activity_sid=reservation_activity.sid,
+                assignment_activity_sid=assignment_activity.sid,
+                target_workers=worker_query
+                )
+        return queue
 
-def get_queue_by_name(workspace, name):
-    queues = build_client().task_queues(workspace.sid).list()
-    return first(filter(lambda queue: queue.friendly_name == name, queues))
+    def add_workflow(self, name, callback='http://example.com/',
+                     timeout=30, configuration=None):
+        workflow = self.client.workflows(self.sid).create(
+            friendly_name=name,
+            assignment_callback_url=callback,
+            fallback_assignment_callback_url=callback,
+            task_reservation_timeout=str(timeout),
+            configuration=self.get_workflow_json_configuration(configuration))
+        return workflow
 
+    def get_activity_by_name(self, name):
+        activities = self.client.activities(self.sid).list()
+        return first(filter(lambda activity: activity.friendly_name == name, activities))
 
-def add_queue(workspace, name, worker_query):
-    client = build_client()
-    queue = client.task_queues(workspace.sid).create(
-       friendly_name=name,
-       reservation_activity_sid=get_activity_by_name(workspace, 'Reserved').sid,
-       assignment_activity_sid=get_activity_by_name(workspace, 'Busy').sid,
-       target_workers=worker_query
-       )
-    return queue
+    def get_queue_by_name(self, name):
+        queues = self.client.task_queues(self.sid).list()
+        return first(filter(lambda queue: queue.friendly_name == name, queues))
 
+    def get_workflow_json_configuration(self, configuration):
+        default_queue = self.get_queue_by_name('Default')
+        defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
 
-def add_workflow(workspace, name, callback='http://example.com/',
-                 timeout=30, configuration=None):
-    client = build_client()
-    workflow = client.workflows(workspace.sid).create(
-        friendly_name=name,
-        assignment_callback_url=callback,
-        fallback_assignment_callback_url=callback,
-        task_reservation_timeout=str(timeout),
-        configuration=get_workflow_json_configuration(workspace,
-                                                      configuration),
-        )
-    return workflow
+        rules = []
+        for rule in configuration:
+            queue = self.get_queue_by_name(rule['targetTaskQueue'])
+            queueRuleTargets = []
+            queueRuleTarget = WorkflowRuleTarget(queue.sid, None, 5, 30)
+            queueRuleTargets.append(queueRuleTarget)
+            queueRuleTargets.append(defaultRuleTarget)
+            rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
 
-
-def get_workflow_json_configuration(workspace, configuration):
-    default_queue = get_queue_by_name(workspace, 'Default')
-    defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
-
-    rules = []
-    for rule in configuration:
-        queue = get_queue_by_name(workspace, rule['targetTaskQueue'])
-        queueRuleTargets = []
-        queueRuleTarget = WorkflowRuleTarget(queue.sid, None, 5, 30)
-        queueRuleTargets.append(queueRuleTarget)
-        queueRuleTargets.append(defaultRuleTarget)
-        rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
-
-    config = WorkflowConfig(rules, None)
-    return config.to_json()
+        config = WorkflowConfig(rules, None)
+        return config.to_json()

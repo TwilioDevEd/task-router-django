@@ -1,6 +1,7 @@
 from django.test import TestCase
 from mock import Mock, patch
 from task_router import creator
+from task_router.creator import Workspace
 
 
 class WorkspaceTests(TestCase):
@@ -48,35 +49,34 @@ class WorkspaceTests(TestCase):
         workers_mock = Mock()
         self.router_client_mock.workers.return_value = workers_mock
 
-        creator.add_worker(Mock(), 'Bob One', attributes={'product': 'Test'})
+        Workspace(Mock()).add_worker('Bob One', attributes={'product': 'Test'})
         workers_mock.create.assert_called_with(
                 attributes='{"product": "Test"}', friendly_name='Bob One')
 
-    @patch('task_router.creator.get_queue_by_name')
-    @patch('task_router.creator.get_activity_by_name')
-    def test_add_queue(self, get_activity_mock, get_queue_mock):
-        get_activity_mock.return_value = Mock(sid='123')
-        get_queue_mock.return_value = None
+    def test_add_queue(self):
         queues_mock = Mock()
+        activities_mock = Mock()
+        mocked_activities = [Mock(sid='123', friendly_name='Reserved'),
+                             Mock(sid='321', friendly_name='Busy')]
+        activities_mock.list.return_value = mocked_activities
         self.router_client_mock.task_queues.return_value = queues_mock
+        self.router_client_mock.activities.return_value = activities_mock
+        workspace_mock = Mock()
 
-        creator.add_queue(Mock(), 'Users', worker_query="1==1")
-        queues_mock.create.assert_called_with(assignment_activity_sid='123',
+        Workspace(workspace_mock).add_queue('Users', worker_query="1==1")
+        queues_mock.create.assert_called_with(assignment_activity_sid='321',
                                               friendly_name='Users',
                                               reservation_activity_sid='123',
                                               target_workers='1==1')
 
-    @patch('task_router.creator.get_workflow_json_configuration')
-    @patch('task_router.creator.get_queue_by_name')
-    def test_add_workflow(self, get_queue_mock, get_configuration_mock):
-        get_configuration_mock.return_value = '{}'
-        get_queue_mock.return_value = Mock(sid='123')
+    def test_add_workflow(self):
         workflows_mock = Mock()
         self.router_client_mock.workflows.return_value = workflows_mock
-        configuration = [{'targetTaskQueue': 'Default', 'expression': '1==1'}]
+        workspace = Workspace(Mock())
+        workspace.get_workflow_json_configuration = lambda x: '{}'
 
-        creator.add_workflow(Mock(), 'Flows', callback='/back',
-                             configuration=configuration)
+        workspace.add_workflow('Flows', callback='/back')
+
         workflows_mock.create.assert_called_with(
                 assignment_callback_url='/back',
                 configuration='{}', fallback_assignment_callback_url='/back',
