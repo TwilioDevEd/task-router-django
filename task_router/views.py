@@ -5,9 +5,12 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from twilio import twiml
 from .models import MissedCall
+from twilio.rest import TwilioRestClient
 import json
 WORKFLOW_SID = settings.WORKFLOW_SID
 POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
+ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
+AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 
 
 def root(request):
@@ -51,8 +54,14 @@ def events(request):
         MissedCall.objects.create(
             phone_number=task_attributes['from'],
             selected_product=task_attributes['selected_product'])
+        _hangup_call(task_attributes['call_sid'])
 
     return HttpResponse('')
+
+
+def _hangup_call(call_sid):
+    client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+    client.calls.update(call_sid, status="completed")
 
 
 def phone_format(n):

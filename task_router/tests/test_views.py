@@ -1,5 +1,6 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
+from mock import patch
 from task_router.views import POST_WORK_ACTIVITY_SID
 from task_router.models import MissedCall
 
@@ -65,12 +66,14 @@ class HomePageTest(TestCase, XmlTestCase):
                     "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
         self.assertEqual(json.loads(content), expected)
 
-    def test_event_persist_missed_call(self):
+    @patch('task_router.views._hangup_call')
+    def test_event_persist_missed_call(self, _):
         # Act
         response = self.client.post('/events', {
             'EventType': 'workflow.timeout',
             'TaskAttributes': '''
             {"from": "+266696687",
+            "call_sid": "123",
             "selected_product": "ACMERockets"}
             '''
         })
@@ -83,12 +86,27 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertEqual(1, len(missedCalls))
         self.assertEqual('ACMERockets', missedCalls[0].selected_product)
 
+    @patch('task_router.views._hangup_call')
+    def test_hangups_on_missed_call(self, mocked_hangup_call):
+        # Act
+        self.client.post('/events', {
+            'EventType': 'workflow.timeout',
+            'TaskAttributes': '''
+            {"from": "+266696687",
+            "call_sid": "123",
+            "selected_product": "ACMERockets"}
+            '''
+        })
+        mocked_hangup_call.assert_called_with('123')
+
     def test_event_ignore_others(self):
         # Act
         response = self.client.post('/events', {
             'EventType': 'other',
-            'from': '+111111111',
-            'selected_product': 'ACMERockets'
+            'TaskAttributes': '''
+            {"from": "+266696687",
+            "selected_product": "ACMERockets"}
+            '''
         })
 
         status_code = response.status_code
