@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from task_router.workspace import create_workspace, delete_workspace
-import json
+from task_router import parser
 
 
 class Command(BaseCommand):
@@ -12,10 +12,7 @@ class Command(BaseCommand):
         parser.add_argument('alice_number')
 
     def handle(self, *args, **options):
-        with open('workspace.json') as json_file:
-            json_string = json_file.read()
-            json_string = json_string % options
-            workspace_json = json.loads(json_string)
+        workspace_json = parser.parse_workspace_json(options)
         try:
             delete_workspace(workspace_json['name'])
         except:
