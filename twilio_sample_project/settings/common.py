@@ -25,29 +25,11 @@ SECRET_KEY = 'not-so-secret'
 
 ALLOWED_HOSTS = []
 
-# Twilio API credentials
-TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
-
-# Twilio number
-TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
-
-# Workspace SID
-WORKSPACE_SID = os.environ.get('WORKSPACE_SID')
-
 # Workflow SID
 WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
 
 # Post work Activity SID
 POST_WORK_ACTIVITY_SID = os.environ.get('POST_WORK_ACTIVITY_SID')
-
-if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_NUMBER):
-    missing_config_values = """
-    You must set the TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_NUMBER
-    environment variables to run this app.
-    Consult the README for instructions on how to find them.
-    """
-    raise ImproperlyConfigured(missing_config_values)
 
 # Application definition
 

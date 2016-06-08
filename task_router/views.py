@@ -4,12 +4,8 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from twilio import twiml
-from twilio.task_router import TaskRouterWorkerCapability
 from .models import MissedCall
 import json
-ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
-AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
-WORKSPACE_SID = settings.WORKSPACE_SID
 WORKFLOW_SID = settings.WORKFLOW_SID
 POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
 
@@ -46,17 +42,6 @@ def assignment(request):
     return JsonResponse(response)
 
 
-def agents(request, worker_sid):
-    worker_capability = TaskRouterWorkerCapability(
-        ACCOUNT_SID, AUTH_TOKEN, WORKSPACE_SID, worker_sid)
-    worker_capability.allow_activity_updates()
-    worker_capability.allow_reservation_updates()
-
-    worker_token = worker_capability.generate_token()
-
-    return render(request, 'agent.html', {'worker_token': worker_token})
-
-
 @csrf_exempt
 def events(request):
     event_type = request.POST.get('EventType')
@@ -68,6 +53,7 @@ def events(request):
             selected_product=task_attributes['selected_product'])
 
     return HttpResponse('')
+
 
 def phone_format(n):
     return format(int(n[:-1]), ",").replace(",", "-") + n[-1]
