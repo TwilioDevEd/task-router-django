@@ -75,7 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'twilio_sample_project.urls'
+ROOT_URLCONF = 'task_router.urls'
 
 TEMPLATES = [
     {
@@ -93,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'twilio_sample_project.wsgi.application'
+WSGI_APPLICATION = 'task_router.wsgi.application'
 
 
 # Database

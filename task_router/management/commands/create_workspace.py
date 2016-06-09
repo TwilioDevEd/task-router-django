@@ -17,19 +17,24 @@ class Command(BaseCommand):
             delete_workspace(workspace_json['name'])
         except:
             pass
+
         workspace = create_workspace(workspace_json['name'],
                                      workspace_json['event_callback'])
+
         for worker in workspace_json['workers']:
             workspace.add_worker(worker['name'],
                                  attributes=worker['attributes'])
+
         for task_queue in workspace_json['task_queues']:
             workspace.add_queue(task_queue['name'],
                                 task_queue['targetWorkers'])
+
         workflow_json = workspace_json['workflow']
         workflow = workspace.add_workflow(workflow_json['name'],
                                           workflow_json['callback'],
                                           workflow_json['timeout'],
                                           workflow_json['routingConfiguration'])
+
         idle = workspace.get_activity_by_name('Idle')
         print('#########################################')
         print("Workspace 'Django Task Router' was created successfully.")
