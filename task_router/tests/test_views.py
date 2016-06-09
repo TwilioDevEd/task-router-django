@@ -87,6 +87,26 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertEqual('ACMERockets', missedCalls[0].selected_product)
 
     @patch('task_router.views._hangup_call')
+    def test_event_persist_canceled_call(self, _):
+        # Act
+        response = self.client.post('/events', {
+            'EventType': 'task.canceled',
+            'TaskAttributes': '''
+            {"from": "+266696687",
+            "call_sid": "123",
+            "selected_product": "ACMETNT"}
+            '''
+        })
+
+        status_code = response.status_code
+
+        self.assertEqual(200, status_code)
+        missedCalls = MissedCall.objects.filter(phone_number='+266696687')
+
+        self.assertEqual(1, len(missedCalls))
+        self.assertEqual('ACMETNT', missedCalls[0].selected_product)
+
+    @patch('task_router.views._hangup_call')
     def test_hangups_on_missed_call(self, mocked_hangup_call):
         # Act
         self.client.post('/events', {

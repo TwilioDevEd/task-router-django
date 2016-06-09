@@ -48,8 +48,9 @@ def assignment(request):
 @csrf_exempt
 def events(request):
     event_type = request.POST.get('EventType')
+    desired_events = ['workflow.timeout', 'task.canceled']
 
-    if event_type == 'workflow.timeout':
+    if event_type in desired_events:
         task_attributes = json.loads(request.POST['TaskAttributes'])
         MissedCall.objects.create(
             phone_number=task_attributes['from'],
