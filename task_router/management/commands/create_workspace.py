@@ -3,7 +3,7 @@ from task_router.workspace import create_workspace, delete_workspace
 from task_router import parser
 
 
-class Command(BaseCommand):
+class CreateWorkspaceCommand(BaseCommand):
     help = 'Creates a Task Router Workspace'
 
     def add_arguments(self, parser):
