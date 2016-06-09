@@ -49,7 +49,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
 
    ```bash
    $ pip install coveralls
-   $ coverage run manage.py test manage.py test --settings=task_router.settings.test
+   $ coverage run manage.py test --settings=task_router.settings.test
    ```
 
 1. Start the server:
