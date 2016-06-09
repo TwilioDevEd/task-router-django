@@ -62,7 +62,3 @@ def events(request):
 def _hangup_call(call_sid):
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
     client.calls.update(call_sid, status="completed")
-
-
-def phone_format(n):
-    return format(int(n[:-1]), ",").replace(",", "-") + n[-1]
