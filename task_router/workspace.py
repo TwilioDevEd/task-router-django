@@ -17,19 +17,19 @@ def build_client():
     return TwilioTaskRouterClient(account_sid, auth_token)
 
 
-def get_workspace_by_name(name):
+def get_by_name(name):
     workspaces = build_client().workspaces.list()
     return first(filter(lambda workspace: workspace.friendly_name == name, workspaces))
 
 
-def delete_workspace(name):
-    workspace = get_workspace_by_name(name)
+def delete(name):
+    workspace = get_by_name(name)
     build_client().workspaces.delete(workspace.sid)
 
 
-def create_workspace(name, event_callback):
+def create(name, event_callback):
     client = build_client()
-    workspace = get_workspace_by_name(name)
+    workspace = get_by_name(name)
     if not workspace:
         workspace = client.workspaces.create(
                 friendly_name=name,

@@ -1,7 +1,7 @@
 import json
 
 
-def parse_workspace_json(options=None):
+def parse(options=None):
         with open('workspace.json') as json_file:
             json_string = json_file.read()
             if options:

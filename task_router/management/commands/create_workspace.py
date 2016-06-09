@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from task_router.workspace import create_workspace, delete_workspace
-from task_router import parser
+from task_router import workspace_parser
+from task_router import workspace
 
 
 class CreateWorkspaceCommand(BaseCommand):
@@ -12,13 +12,13 @@ class CreateWorkspaceCommand(BaseCommand):
         parser.add_argument('alice_number')
 
     def handle(self, *args, **options):
-        workspace_json = parser.parse_workspace_json(options)
+        workspace_json = workspace_parser.parse(options)
         try:
-            delete_workspace(workspace_json['name'])
+            workspace.delete(workspace_json['name'])
         except:
             pass
 
-        self.workspace = create_workspace(workspace_json['name'],
+        self.workspace = workspace.create(workspace_json['name'],
                                           workspace_json['event_callback'])
 
         self.add_workers(workspace_json['workers'])
