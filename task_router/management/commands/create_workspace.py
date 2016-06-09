@@ -18,24 +18,16 @@ class CreateWorkspaceCommand(BaseCommand):
         except:
             pass
 
-        workspace = create_workspace(workspace_json['name'],
-                                     workspace_json['event_callback'])
+        self.workspace = create_workspace(workspace_json['name'],
+                                          workspace_json['event_callback'])
 
-        for worker in workspace_json['workers']:
-            workspace.add_worker(worker['name'],
-                                 attributes=worker['attributes'])
+        self.add_workers(workspace_json['workers'])
 
-        for task_queue in workspace_json['task_queues']:
-            workspace.add_queue(task_queue['name'],
-                                task_queue['targetWorkers'])
+        self.add_task_queues(workspace_json['task_queues'])
 
-        workflow_json = workspace_json['workflow']
-        workflow = workspace.add_workflow(workflow_json['name'],
-                                          workflow_json['callback'],
-                                          workflow_json['timeout'],
-                                          workflow_json['routingConfiguration'])
+        workflow = self.add_workflow(workspace_json['workflow'])
 
-        idle = workspace.get_activity_by_name('Idle')
+        idle = self.workspace.get_activity_by_name('Idle')
         print('#########################################')
         print("Workspace 'Django Task Router' was created successfully.")
         print('#########################################')
@@ -43,3 +35,21 @@ class CreateWorkspaceCommand(BaseCommand):
         print('export WORKFLOW_SID=%s' % workflow.sid)
         print('export POST_WORK_ACTIVITY_SID=%s' % idle.sid)
         print('#########################################')
+
+    def add_workers(self, workers):
+        for worker in workers:
+            self.workspace.add_worker(worker['name'],
+                                      attributes=worker['attributes'])
+
+    def add_task_queues(self, task_queues):
+        for task_queue in task_queues:
+            self.workspace.add_queue(task_queue['name'],
+                                     task_queue['targetWorkers'])
+
+    def add_workflow(self, workflow):
+        return self.workspace.add_workflow(workflow['name'],
+                                           workflow['callback'],
+                                           workflow['timeout'],
+                                           workflow['routingConfiguration'])
+
+Command = CreateWorkspaceCommand
