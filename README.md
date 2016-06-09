@@ -1,5 +1,9 @@
-# Task Router - Django
-[![Build Status](https://travis-ci.org/TwilioDevEd/task-router-django.svg?branch=master)]
+<a href="https://www.twilio.com">
+  <img src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg" alt="Twilio" width="250" />
+</a>
+
+# Task Router - Python/Django
+![Build Status](https://travis-ci.org/TwilioDevEd/task-router-django.svg?branch=master)
 
  Use Twilio to provide your user with multiple options through phone calls, so they can be assisted by an agent specialized in the chosen topic. This is basically a call center created with the Task Router API of Twilio. This example uses a PostgreSQL database to log phone calls which were not assisted.
 
@@ -21,7 +25,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
 
 1. Edit the sample configuration file `.env.example` and edit it to match your configuration.
 
-   You can use the `.env.example` in a unix based operating system with the `source` command to load the variables into your environment:
+   You can use the `.env.example` in a Unix based operating system with the `source` command to load the variables into your environment:
 
    ```bash
    $ source .env.example
@@ -38,14 +42,14 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
 1. Make sure the tests succeed:
 
    ```bash
-   $ manage.py test --settings=twilio_sample_project.settings.test
+   $ manage.py test --settings=task_router.settings.test
    ```
 
 1. It's highly recommended to use [coverall](//coveralls.io) in your long term projects:
 
    ```bash
    $ pip install coveralls
-   $ coverage run manage.py test manage.py test --settings=twilio_sample_project.settings.test
+   $ coverage run manage.py test manage.py test --settings=task_router.settings.test
    ```
 
 1. Start the server:
@@ -77,7 +81,7 @@ Once ngrok is running open up your browser and go to your ngrok URL. It will loo
  ```
 $ python manage.py create_workspace https://<sub-domain>.ngrok.io <agent1-phone> <agent2-phone>
  ```
-You will receive a message telling you to export 2 enviroment variables:
+You will receive a message telling you to export 2 environment variables:
 
  ```
 $ export WORKFLOW_SID=<hashvalue-workflow-sid>
