@@ -1,5 +1,8 @@
 # Requirements for browser-calls-django
 
+# Linter
+flake8==2.5.4
+
 # Django (1.8 is a long-term support release)
 Django==1.8
 

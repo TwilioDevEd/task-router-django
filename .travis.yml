@@ -6,7 +6,9 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install coveralls
-script: coverage run manage.py test --settings=task_router.settings.test
+before_script:
+  - flake8 .
+script: coverage run --source=task_router manage.py test --settings=task_router.settings.test
 env:
   - TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXX TWILIO_AUTH_TOKEN=YYYYYYYYYYYYYYYYYY TWILIO_NUMBER=+15555555555
 after_success:
