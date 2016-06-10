@@ -12,7 +12,7 @@
           {% for missed_call in missed_calls %}
             <tr>
                 <td><strong>{{ missed_call.selected_product }}</strong></td>
-                <td><a href="tel:{{ missed_call.phone_number }}">{{ missed_call.formatted_phone }}</a></td>
+                <td><a href="tel:{{ missed_call.phone_number }}">{{ missed_call.international_phone_number}}</a></td>
             </tr>
           {% endfor %}
         </tbody>
