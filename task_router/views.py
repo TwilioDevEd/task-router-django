@@ -14,6 +14,7 @@ AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 
 
 def root(request):
+    """ Renders a missed calls list, with product and phone number """
     missed_calls = MissedCall.objects.order_by('created')
     return render(request, 'index.html', {
         'missed_calls': missed_calls
@@ -22,6 +23,7 @@ def root(request):
 
 @csrf_exempt
 def incoming_call(request):
+    """ Returns TwiML instructions to Twilio's POST requests """
     resp = twiml.Response()
     with resp.gather(numDigits=1, action="/call/enqueue", method="POST") as g:
         g.say("For Programmable SMS, press one. For Voice, press any other key.")
@@ -30,6 +32,7 @@ def incoming_call(request):
 
 @csrf_exempt
 def enqueue(request):
+    """ Parses a selected product, creating a Task on Task Router Workflow """
     resp = twiml.Response()
     digits = request.POST['Digits']
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
@@ -40,6 +43,7 @@ def enqueue(request):
 
 @csrf_exempt
 def assignment(request):
+    """ Task assignment """
     response = {"instruction": "dequeue",
                 "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
     return JsonResponse(response)
@@ -47,6 +51,7 @@ def assignment(request):
 
 @csrf_exempt
 def events(request):
+    """ Events callback for missed calls """
     event_type = request.POST.get('EventType')
     desired_events = ['workflow.timeout', 'task.canceled']
 
