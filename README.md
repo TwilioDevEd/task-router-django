@@ -23,6 +23,20 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
    $ cd task-router-django
    ```
 
+1. Create a new virtual environment:
+   - If using vanilla [virtualenv](https://virtualenv.pypa.io/en/latest/):
+
+       ```bash
+       virtualenv venv
+       source venv/bin/activate
+       ```
+
+   - If using [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/):
+
+       ```bash
+       mkvirtualenv task-router-django
+       ```
+
 1. Setup your configuration in your local environment.
 
    You can use the `.env.example` in a Unix based operative system with the `source` command to load the variables into your environment:
@@ -39,17 +53,16 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
    $ pip install -r requirements.txt
    ```
 
+1. Run the migrations with:
+
+   ```bash
+   python manage.py migrate
+   ```
+
 1. Make sure the tests succeed.
 
    ```bash
    $ manage.py test --settings=task_router.settings.test
-   ```
-
-1. It's highly recommended to use [coverall](//coveralls.io) in your long term projects.
-
-   ```bash
-   $ pip install coveralls
-   $ coverage run manage.py test --settings=task_router.settings.test
    ```
 
 1. Configure the phone number of the agents which are going to answer the calls.
