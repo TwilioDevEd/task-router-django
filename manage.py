@@ -3,8 +3,8 @@ import os
 import sys
 
 if __name__ == "__main__":
-    test_settings = 'task_router.settings.test'
-    default_settings = 'task_router.settings.local'
+    test_settings = 'twilio_sample_project.settings.test'
+    default_settings = 'twilio_sample_project.settings.local'
     settings = test_settings if 'test' in sys.argv else default_settings
 
     os.environ.setdefault(

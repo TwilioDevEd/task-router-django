@@ -62,7 +62,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
 1. Make sure the tests succeed.
 
    ```bash
-   $ manage.py test --settings=task_router.settings.test
+   $ python manage.py test --settings=twilio_sample_project.settings.test
    ```
 
 1. Configure the phone number of the agents which are going to answer the calls.
