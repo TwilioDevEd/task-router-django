@@ -1,36 +1,108 @@
-.chapter(data-title='Your New Viewsaurus Tutorial')
-  .step(data-title='Welcome!', data-file='tutorial/config.json')
-    h2 Welcome to Viewsaurus
-
-    p Thanks for writing a Viewsaurus tutorial! If you're new to Viewsaurus, feel free to click through this brief tutorial showing you how a Viewsaurus tutorial is structured.
-
-    p The tutorial's navigation controls are located above this text. Use <i class="fa fa-fw fa-play"></i> to move to the next step of the tutorial. Use <i class="fa fa-fw fa-play fa-rotate-180"></i> to move to the previous step of the tutorial (if there is one). Use <i class="fa fa-fw fa-list"></i> to see an overview of all the steps in the tutorial.
-
-    p Let's begin by walking through the files generated for you in the `tutorial` directory with the `saurus new` command - those files are actually what is being used to show you this tutorial right now!
-
-  .step(data-title='Tutorial Configuration', data-file='tutorial/config.json')
+.chapter(data-title='Task Router Django')
+  .step(data-title='Application Overview', data-file='task_router/urls.py')
     :markdown
-      ## Configuration
+      ## Application Overview
 
-      The first file we'll look at is `config.json`. This contains high-level configuration information about your tutorial. This JSON file contains several properties you can declare about your tutorial:
+      In this tutorial we will show how to automate the routing of calls from
+      customers to your support agents. Customers will be able to select a
+      product and wait while Task Router tries to contact a product
+      specialist for the best support experience. If no one is available, our
+      application will also save the customer number and selected product,
+      allowing us to call later.
+      This is what the application does at a high level:
+      1 - Configure a workspace using the Twilio REST API
+      1 - Listen for incoming calls, playing a message telling user to select a product
+      1 - Create a Task from the selected product, asking Task Router to handle it
+      1 - Listen for missed calls and show them for agents to call back
 
-      * `title`: This is the title of your tutorial which will show on the first page
-      * `description`: This is a string of text that will appear above the "Start" button for your tutorial.
-      * `repo`: This is the GitHub repo that your code lives in. Right now we assume all projects are hosted there, but we'll likely make this agnostic in the future.
-      * `heroku`: This indicates whether or not your project supports instant deployment with the [Heroku Button](https://blog.heroku.com/archives/2014/8/7/heroku-button)
+  .step(data-title='Configuring the Workspace', data-file='task_router/workspace.py',
+    data-highlight='14-17,41-97')
+    :markdown
+      ## Configuring the Workspace
 
-      Now, let's take a look at the first file that contains the actual content of the tutorial, `index.jade`.
+      In order to instruct Task Router to handle the Tasks, we need to quickly
+      configure a Workspace. This is possible either using the [Task Router
+      Dashboard](https://www.twilio.com/user/account/taskrouter/workspaces) or
+      programatically.
 
-  .step(data-title='Step Two')
-    h2 Under Construction
+      A Workspace is the container element for any Task Router application. The
+      elements are: Tasks - Represents a customer trying to contact an agent
+      Workers - The agents responsible for handling Tasks Task Queues - Holds
+      Tasks to be consumed by a set of Workers Workflows - Responsible for
+      matching Tasks into Task Queues Activities - Possible states of a Worker.
+      Eg: idle, offline, busy
 
-    p more tutorial to come.
+      This application configures a Workspace using the [Twilio REST
+      API](python-api-library) through the `configure_workspace` [Django
+      Command](), [check it out here]().  For our example application we have
+      created two workers (Bob and Alice) and each one of them respond to a
+      specific product call.
 
-  //- Example: include markdown file
-    .step(data-title='Step Three', data-file='', data-highlight='')
-      include:markdown three.md
+  .step(data-title='Responding To A Twilio Request', data-file='task_router/views.py',
+    data-highlight='24-30')
+    :markdown
+      ## Responding To A Twilio Request
 
-  //- Example: include jade file (don't need file extension)
-    .step(data-title='Step Four', data-file='', data-highlight='')
-      include four
+      Right after receiving a call or an SMS, Twilio will send a request to the
+      URL specified on the number's configuration.
 
+      The endpoint will then process the request. In case the request is not an
+      answer from a previous question the application will build and return a
+      welcome message to the user. For phone users, the built message will
+      contain a Say verb with the message or a Message Verb for SMS.
+
+      It will also include a Redirect verb to the question's endpoint to
+      continue with the survey flow.  Text: Generate a TwiML telling the number
+      of each product and asking twilio to gather the key pressed on dial pad.
+
+  .step(data-title='Creating a Task', data-file='task_router/views.py',
+    data-highlight='33-41')
+    :markdown
+      ## Creating a Task
+
+      This is the endpoint used as a callback when a user presses a key during
+      the call. Based on the pressed digit, a `Task` will be created, holding
+      `selected_product` as an attribute. The Workflow will take this Task's
+      attributes and match with the [configured
+      expressions](https://www.twilio.com/docs/api/taskrouter/expression-syntax)
+      in order to find an appropriate available Worker.  To achieve this, we
+      use the [`Enqueue` verb]() to [integrate with
+      TaskRouter](https://www.twilio.com/docs/api/taskrouter/twiml-integration).
+      This integration happens when we specify a WorkflowSid on the verb.
+
+  .step(data-title='Assigning a worker', data-file='task_router/views.py',
+    data-highlight='44-49')
+    :markdown
+      ## Assigning a worker
+
+      When TaskRouter selects a Worker to handle a Task it makes an HTTP
+      request to this endpoint, which was configured using the
+      [`configure_workspace`](django command) Django command. Handling this
+      [Assignment Callback]() is a key component of building a TaskRouter
+      application. 
+
+      Here, we will [instruct]() TaskRouter to [dequeue]() the call that was
+      enqueued on the previous step. We also send a `post_work_activity_sid`
+      which will tell Task Router which Activity to assign this worker after
+      the call ends.
+
+  .step(data-title='Collecting missed calls', data-file='task_router/views.py',
+    data-highlight='52-70')
+    :markdown
+      ## Collecting missed calls
+
+      This endpoint will be called after each [TaskRouter
+      Event](https://www.twilio.com/docs/api/taskrouter/events#event-types) is
+      fired. In our application, we are trying to collect missed calls, so it's
+      interesting to pick `workflow.timeout`. This event is triggered when the
+      Task waits more than the limit set on Workflow Configuration, which
+      happens when no available worker is found after trying out all possible
+      Task Queues configured as rules for this Workflow.  Here we hang up and
+      store it on the database to be able to call this user later, but Task
+      Router gives us plenty of options. One of them is to input another Task
+      to a Task Queue of missed calls, which can wait longer until a worker is
+      available to call the customer back.  Note that we are also listening for
+      `task.canceled`. This is triggered when the customer hangs up before
+      being assigned to a worker, cancelling the task. Capturing this event
+      allow us to collect also the customers that gave up before Workflow
+      timeout.

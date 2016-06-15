@@ -1,6 +1,6 @@
 {
-    "title": "Learn You task-router-django For Much Win",
-    "repo": "<your GitHub username>/<GitHub repo name>",
-    "description": "Thanks for writing a tutorial with Viewsaurus! This example tutorial will show you the basic functionality of Viewsaurus. Click the \"Start\" button below to see how Viewsaurus works.",
+    "title": "Task Router Django",
+    "repo": "TwilioDevEd/task-router-django",
+    "description": "In this tutorial we will show how to automate the routing of calls from customers to your support agents. Customers will be able to select a product and wait while Task Router tries to contact a product specialist for the best support experience. If no one is available, our application will also save the customer number and selected product, allowing us to call later.",
     "heroku": false
 }
