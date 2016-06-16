@@ -9,22 +9,22 @@
 .wrapper {
   height:100%;
   width:100%;
-}</style><link rel="shortcut icon" href="//twilio.com/bundles/marketing/img/favicons/favicon.ico"><link rel="apple-touch-icon" href="//twilio.com/bundles/marketing/img/favicons/favicon_57.png"><link rel="apple-touch-icon" sizes="72x72" href="//twilio.com/bundles/marketing/img/favicons/favicon_72.png"><link rel="apple-touch-icon" sizes="114x114" href="//twilio.com/bundles/marketing/img/favicons/favicon_114.png"><link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"><link rel="stylesheet" href="viewsaurus.css"></head><body><div class="wrapper"><div id="viewsaurus" data-title="Task Router Django"><div class="saurus-panes"><div class="saurus-prose"><div class="saurus-prose-header"><div class="title-outer"><span class="step-title">Task Router Django</span></div></div><div class="saurus-nav-buttons"><div class="saurus-nav-button nav-overview"><div class="saurus-nav-button-inner"><i class="fa fa-fw fa-list"></i></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-previous"><div class="saurus-nav-button-inner"><a href=""> <i class="fa fa-fw fa-play fa-rotate-180"></i></a></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-next clickable"><div class="saurus-nav-button-inner"><a href="#1"> <i class="fa fa-fw fa-play"></i></a></div></div><div class="saurus-next-title"><span class="next-title-inner"></span></div></div><div class="saurus-progress-bar"></div><div class="saurus-start"><p>In this tutorial we will show how to automate the routing of calls from customers to your support agents. Customers will be able to select a product and wait while Task Router tries to contact a product specialist for the best support experience. If no one is available, our application will also save the customer number and selected product, allowing us to call later.</p><a href="#0">Start Tutorial</a></div><div class="saurus-content"><div data-title="TaskRouter Django" class="chapter"><div data-title="Application Overview" data-file="task_router/urls.py" class="step"><h2 id="application-overview">Application Overview</h2>
+}</style><link rel="shortcut icon" href="//twilio.com/bundles/marketing/img/favicons/favicon.ico"><link rel="apple-touch-icon" href="//twilio.com/bundles/marketing/img/favicons/favicon_57.png"><link rel="apple-touch-icon" sizes="72x72" href="//twilio.com/bundles/marketing/img/favicons/favicon_72.png"><link rel="apple-touch-icon" sizes="114x114" href="//twilio.com/bundles/marketing/img/favicons/favicon_114.png"><link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"><link rel="stylesheet" href="viewsaurus.css"></head><body><div class="wrapper"><div id="viewsaurus" data-title="Task Router Django"><div class="saurus-panes"><div class="saurus-prose"><div class="saurus-prose-header"><div class="title-outer"><span class="step-title">Task Router Django</span></div></div><div class="saurus-nav-buttons"><div class="saurus-nav-button nav-overview"><div class="saurus-nav-button-inner"><i class="fa fa-fw fa-list"></i></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-previous"><div class="saurus-nav-button-inner"><a href=""> <i class="fa fa-fw fa-play fa-rotate-180"></i></a></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-next clickable"><div class="saurus-nav-button-inner"><a href="#1"> <i class="fa fa-fw fa-play"></i></a></div></div><div class="saurus-next-title"><span class="next-title-inner"></span></div></div><div class="saurus-progress-bar"></div><div class="saurus-start"><p>Give your customers specialized product support. Learn how to use TaskRouter to create a workflow that will redirect users to an appropriate sales agent, based on the product they select.</p><a href="#0">Start Tutorial</a></div><div class="saurus-content"><div data-title="TaskRouter Django" class="chapter"><div data-title="Application Overview" data-file="task_router/urls.py" class="step"><h2 id="application-overview">Application Overview</h2>
 <p>In this tutorial we will show how to automate the routing of calls from
 customers to your support agents. Customers will be able to select a
 product and wait while TaskRouter tries to contact a product
 specialist for the best support experience. If no one is available, our
-application will also save the customer number and selected product,
-allowing us to call later.</p>
+application will also save the customer number and selected product so
+an agent can call them back.</p>
 <p>This is what the application does at a high level:</p>
 <ol>
-<li><p>Configure a workspace using the Twilio REST API</p>
+<li><p>Configure a workspace using the Twilio REST API.</p>
 </li>
-<li><p>Listen for incoming calls, playing a message telling user to select a product</p>
+<li><p>Listen for incoming calls and let the user select a product with the dial pad.</p>
 </li>
-<li><p>Create a Task from the selected product, asking TaskRouter to handle it</p>
+<li><p>Create a Task with the selected product and let TaskRouter handle it.</p>
 </li>
-<li><p>Listen for missed calls and show them for agents to call back</p>
+<li><p>Store missed calls so agents can return the call to customers.</p>
 </li>
 </ol>
 <hr>
@@ -34,10 +34,10 @@ allowing us to call later.</p>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter">Getting Started with Twilio TaskRouter</a></li>
 </ul>
 </div><div data-title="Configuring the Workspace" data-file="task_router/workspace.py" data-highlight="14-17,41-97" class="step"><h2 id="configuring-the-workspace">Configuring the Workspace</h2>
-<p>In order to instruct TaskRouter to handle the Tasks, we need to quickly
+<p>In order to instruct TaskRouter to handle the Tasks, we need to
 configure a Workspace. This is possible either using the <a href="//www.twilio.com/user/account/taskrouter/workspaces">TaskRouter
 Dashboard</a> or
-programatically throught <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
+programmatically through <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
 <p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter application. The
 elements are:</p>
 <ul>
@@ -47,11 +47,10 @@ elements are:</p>
 <li><a href="https://www.twilio.com/docs/api/taskrouter/workflows">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
 <li><a href="https://www.twilio.com/docs/api/taskrouter/activities">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
 </ul>
-<p>This application configures a Workspace using the <a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">Python Twilio REST
-API</a> through the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
+<p>This application uses the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
 Command</a>, <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py">check it out here</a>.
 For our example application we have created two workers (Bob and Alice)
-and each one of them respond to a specific product.</p>
+and each one of them receive calls for a specific product.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -59,9 +58,9 @@ and each one of them respond to a specific product.</p>
 <li><a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter: REST API Reference</a></li>
 <li><a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">TaskRouter: Python API Documentation</a></li>
 </ul>
-</div><div data-title="Responding To A Twilio Request" data-file="task_router/views.py" data-highlight="24-30" class="step"><h2 id="responding-to-a-twilio-request">Responding To A Twilio Request</h2>
+</div><div data-title="Handling Twilio's Request" data-file="task_router/views.py" data-highlight="24-30" class="step"><h2 id="handling-twilio-s-request">Handling Twilio&#39;s Request</h2>
 <p>Right after receiving a call, Twilio will send a request to the
-URL specified on the number&#39;s configuration.</p>
+URL specified on the <a href="//www.twilio.com/user/account/phone-numbers/incoming">number&#39;s configuration</a>.</p>
 <p>The endpoint will then process the request and generate a TwiML response.
 We&#39;ll use the Say verb to give the user product alternatives, and a key
 they can press in order to select one. The Gather verb allows us to
@@ -75,16 +74,16 @@ capture the user&#39;s keypress.</p>
 <li><a href="//www.twilio.com/docs/api/twiml/gather">TwiML Voice: &lt;Gather&gt; verb</a></li>
 </ul>
 </div><div data-title="Creating a Task" data-file="task_router/views.py" data-highlight="33-41" class="step"><h2 id="creating-a-task">Creating a Task</h2>
-<p>This is the endpoint set as <code>action</code> URL on the <code>Gather</code> verb for the
-previous step. It is fired after the user presses a key during the call.
-This request has a <code>Digits</code> parameter telling which key was pressed.
-Based on the pressed digit, a <code>Task</code> will be created, holding
+<p>This is the endpoint set as the <code>action</code> URL on the <code>Gather</code> verb for the
+previous step. A request is made to this endpoint when the user presses a key during the call.
+This request has a <code>Digits</code> parameter that holds the pressed keys.
+A <code>Task</code> will be created based on the pressed digit with the
 <code>selected_product</code> as an attribute. The Workflow will take this Task&#39;s
 attributes and match with the <a href="https://www.twilio.com/docs/api/taskrouter/expression-syntax">configured
 expressions</a>
 in order to find an appropriate available Worker.</p>
 <p>We use the <a href="//www.twilio.com/docs/api/twiml/enqueue"><code>Enqueue</code> verb</a> to <a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">integrate with
-TaskRouter</a>. This integration happens when we specify a
+TaskRouter</a>. We just need to specify a
 WorkflowSid on the verb.</p>
 <hr>
 <p><strong>See Also:</strong></p>
@@ -113,19 +112,17 @@ the call ends.</p>
 </ul>
 </div><div data-title="Collecting missed calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting missed calls</h2>
 <p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
-is fired. In our application, we are trying to collect missed calls, so
-it&#39;s interesting to pick <code>workflow.timeout</code>. This event is triggered when
+is triggered. In our application, we are trying to collect missed calls, so
+it&#39;s interesting to handle the <code>workflow.timeout</code> event. This event is triggered when
 the Task waits more than the limit set on Workflow Configuration, which
 happens when no available worker is found after trying out all possible
 Task Queues configured as rules for this Workflow.</p>
-<p>Here we hang up and store it on the database to be able to call this user
-later, but TaskRouter gives us plenty of options. One of them is to
-input another Task to a Task Queue of missed calls, which can wait longer
-until a worker is available to call the customer back.</p>
+<p>Here we hang up and store the call information in the database to be able to call this user
+later.</p>
 <p>Note that we are also listening for <code>task.canceled</code>. This is triggered
 when the customer hangs up before being assigned to a worker, cancelling
 the task. Capturing this event allow us to collect also the
-customers that gave up before Workflow timeout.</p>
+customers that hung up before the Workflow timeouts.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>

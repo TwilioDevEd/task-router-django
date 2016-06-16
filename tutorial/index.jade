@@ -7,18 +7,18 @@
       customers to your support agents. Customers will be able to select a
       product and wait while TaskRouter tries to contact a product
       specialist for the best support experience. If no one is available, our
-      application will also save the customer number and selected product,
-      allowing us to call later.
+      application will also save the customer number and selected product so
+      an agent can call them back.
 
       This is what the application does at a high level:
 
-      1. Configure a workspace using the Twilio REST API
+      1. Configure a workspace using the Twilio REST API.
 
-      1. Listen for incoming calls, playing a message telling user to select a product
+      1. Listen for incoming calls and let the user select a product with the dial pad.
 
-      1. Create a Task from the selected product, asking TaskRouter to handle it
+      1. Create a Task with the selected product and let TaskRouter handle it.
 
-      1. Listen for missed calls and show them for agents to call back
+      1. Store missed calls so agents can return the call to customers.
 
       ---
       **See Also:**
@@ -30,10 +30,10 @@
     :markdown
       ## Configuring the Workspace
 
-      In order to instruct TaskRouter to handle the Tasks, we need to quickly
+      In order to instruct TaskRouter to handle the Tasks, we need to
       configure a Workspace. This is possible either using the [TaskRouter
       Dashboard](//www.twilio.com/user/account/taskrouter/workspaces) or
-      programatically throught [TaskRouter REST API][api-main].
+      programmatically through [TaskRouter REST API][api-main].
 
       A [Workspace][workspaces-doc] is the container element for any TaskRouter application. The
       elements are:
@@ -43,11 +43,10 @@
       * [Workflows][workflows-doc] - Responsible for matching Tasks into Task Queues
       * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
 
-      This application configures a Workspace using the [Python Twilio REST
-      API][python-api-doc] through the `configure_workspace` [Django
+      This application uses the `configure_workspace` [Django
       Command][django-commands], [check it out here][workspace-command-github].
       For our example application we have created two workers (Bob and Alice)
-      and each one of them respond to a specific product.
+      and each one of them receive calls for a specific product.
 
       ---
       **See Also:**
@@ -66,13 +65,13 @@
       [workers-doc]: https://www.twilio.com/docs/api/taskrouter/workers
       [activities-doc]: https://www.twilio.com/docs/api/taskrouter/activities
 
-  .step(data-title='Responding To A Twilio Request', data-file='task_router/views.py',
+  .step(data-title="Handling Twilio's Request", data-file='task_router/views.py',
     data-highlight='24-30')
     :markdown
-      ## Responding To A Twilio Request
+      ## Handling Twilio's Request
 
       Right after receiving a call, Twilio will send a request to the
-      URL specified on the number's configuration.
+      URL specified on the [number's configuration](//www.twilio.com/user/account/phone-numbers/incoming).
 
       The endpoint will then process the request and generate a TwiML response.
       We'll use the Say verb to give the user product alternatives, and a key
@@ -91,17 +90,17 @@
     :markdown
       ## Creating a Task
 
-      This is the endpoint set as `action` URL on the `Gather` verb for the
-      previous step. It is fired after the user presses a key during the call.
-      This request has a `Digits` parameter telling which key was pressed.
-      Based on the pressed digit, a `Task` will be created, holding
+      This is the endpoint set as the `action` URL on the `Gather` verb for the
+      previous step. A request is made to this endpoint when the user presses a key during the call.
+      This request has a `Digits` parameter that holds the pressed keys.
+      A `Task` will be created based on the pressed digit with the
       `selected_product` as an attribute. The Workflow will take this Task's
       attributes and match with the [configured
       expressions](https://www.twilio.com/docs/api/taskrouter/expression-syntax)
       in order to find an appropriate available Worker.
 
       We use the [`Enqueue` verb][enqueue-verb] to [integrate with
-      TaskRouter][integration-doc]. This integration happens when we specify a
+      TaskRouter][integration-doc]. We just need to specify a
       WorkflowSid on the verb.
 
       ---
@@ -146,21 +145,19 @@
       ## Collecting missed calls
 
       This endpoint will be called after each [TaskRouter Event][event-types]
-      is fired. In our application, we are trying to collect missed calls, so
-      it's interesting to pick `workflow.timeout`. This event is triggered when
+      is triggered. In our application, we are trying to collect missed calls, so
+      it's interesting to handle the `workflow.timeout` event. This event is triggered when
       the Task waits more than the limit set on Workflow Configuration, which
       happens when no available worker is found after trying out all possible
       Task Queues configured as rules for this Workflow.
 
-      Here we hang up and store it on the database to be able to call this user
-      later, but TaskRouter gives us plenty of options. One of them is to
-      input another Task to a Task Queue of missed calls, which can wait longer
-      until a worker is available to call the customer back.
+      Here we hang up and store the call information in the database to be able to call this user
+      later.
 
       Note that we are also listening for `task.canceled`. This is triggered
       when the customer hangs up before being assigned to a worker, cancelling
       the task. Capturing this event allow us to collect also the
-      customers that gave up before Workflow timeout.
+      customers that hung up before the Workflow timeouts.
 
       ---
       **See Also:**
