@@ -7,7 +7,7 @@ from .views import assignment
 from .views import events
 
 urlpatterns = [
-    # URLs for searching for and purchasing a new Twilio number
+    # URLs for handling TaskRouter requests
     url(r'^$', root, name='root'),
     url(r'^call/incoming/?$', incoming_call, name='incoming_call'),
     url(r'^call/enqueue/?$', enqueue, name='enqueue'),

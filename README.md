@@ -13,7 +13,7 @@
 
 1. [Python [2.7;3.4]](https://www.python.org/downloads/) installed in your operative system.
 1. A Twilio account with a verified [phone number][twilio-phone-number]. (Get a [free account](//www.twilio.com/try-twilio?utm_campaign=tutorials&utm_medium=readme)
-here.).  If you are using a Twilio Trial Account, you can learn all about it [here](https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work)
+here.).  If you are using a Twilio Trial Account, you can learn all about it [here](https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work).
 
 ### Local Development
 
@@ -23,7 +23,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
    $ cd task-router-django
    ```
 
-1. Create a new virtual environment:
+1. Create a new virtual environment.
    - If using vanilla [virtualenv](https://virtualenv.pypa.io/en/latest/):
 
        ```bash
@@ -53,7 +53,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
    $ pip install -r requirements.txt
    ```
 
-1. Run the migrations with:
+1. Run the migrations.
 
    ```bash
    python manage.py migrate
@@ -78,7 +78,7 @@ here.).  If you are using a Twilio Trial Account, you can learn all about it [he
 
    When the user calls, he will choose one option which will redirect him to the first agent whose phone number is __agent1-phone__. If the user gets no answer in 30 seconds he will be redirected to the second agent whose phone number is __agent2-phone__.
 
-1. Start the server:
+1. Start the server.
 
    ```bash
    $ python manage.py runserver
