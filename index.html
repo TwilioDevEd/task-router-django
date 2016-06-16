@@ -9,80 +9,123 @@
 .wrapper {
   height:100%;
   width:100%;
-}</style><link rel="shortcut icon" href="//twilio.com/bundles/marketing/img/favicons/favicon.ico"><link rel="apple-touch-icon" href="//twilio.com/bundles/marketing/img/favicons/favicon_57.png"><link rel="apple-touch-icon" sizes="72x72" href="//twilio.com/bundles/marketing/img/favicons/favicon_72.png"><link rel="apple-touch-icon" sizes="114x114" href="//twilio.com/bundles/marketing/img/favicons/favicon_114.png"><link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"><link rel="stylesheet" href="viewsaurus.css"></head><body><div class="wrapper"><div id="viewsaurus" data-title="Task Router Django"><div class="saurus-panes"><div class="saurus-prose"><div class="saurus-prose-header"><div class="title-outer"><span class="step-title">Task Router Django</span></div></div><div class="saurus-nav-buttons"><div class="saurus-nav-button nav-overview"><div class="saurus-nav-button-inner"><i class="fa fa-fw fa-list"></i></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-previous"><div class="saurus-nav-button-inner"><a href=""> <i class="fa fa-fw fa-play fa-rotate-180"></i></a></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-next clickable"><div class="saurus-nav-button-inner"><a href="#1"> <i class="fa fa-fw fa-play"></i></a></div></div><div class="saurus-next-title"><span class="next-title-inner"></span></div></div><div class="saurus-progress-bar"></div><div class="saurus-start"><p>In this tutorial we will show how to automate the routing of calls from customers to your support agents. Customers will be able to select a product and wait while Task Router tries to contact a product specialist for the best support experience. If no one is available, our application will also save the customer number and selected product, allowing us to call later.</p><a href="#0">Start Tutorial</a></div><div class="saurus-content"><div data-title="Task Router Django" class="chapter"><div data-title="Application Overview" data-file="task_router/urls.py" class="step"><h2 id="application-overview">Application Overview</h2>
+}</style><link rel="shortcut icon" href="//twilio.com/bundles/marketing/img/favicons/favicon.ico"><link rel="apple-touch-icon" href="//twilio.com/bundles/marketing/img/favicons/favicon_57.png"><link rel="apple-touch-icon" sizes="72x72" href="//twilio.com/bundles/marketing/img/favicons/favicon_72.png"><link rel="apple-touch-icon" sizes="114x114" href="//twilio.com/bundles/marketing/img/favicons/favicon_114.png"><link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"><link rel="stylesheet" href="viewsaurus.css"></head><body><div class="wrapper"><div id="viewsaurus" data-title="Task Router Django"><div class="saurus-panes"><div class="saurus-prose"><div class="saurus-prose-header"><div class="title-outer"><span class="step-title">Task Router Django</span></div></div><div class="saurus-nav-buttons"><div class="saurus-nav-button nav-overview"><div class="saurus-nav-button-inner"><i class="fa fa-fw fa-list"></i></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-previous"><div class="saurus-nav-button-inner"><a href=""> <i class="fa fa-fw fa-play fa-rotate-180"></i></a></div><div class="nav-divider"></div></div><div class="saurus-nav-button nav-next clickable"><div class="saurus-nav-button-inner"><a href="#1"> <i class="fa fa-fw fa-play"></i></a></div></div><div class="saurus-next-title"><span class="next-title-inner"></span></div></div><div class="saurus-progress-bar"></div><div class="saurus-start"><p>In this tutorial we will show how to automate the routing of calls from customers to your support agents. Customers will be able to select a product and wait while Task Router tries to contact a product specialist for the best support experience. If no one is available, our application will also save the customer number and selected product, allowing us to call later.</p><a href="#0">Start Tutorial</a></div><div class="saurus-content"><div data-title="TaskRouter Django" class="chapter"><div data-title="Application Overview" data-file="task_router/urls.py" class="step"><h2 id="application-overview">Application Overview</h2>
 <p>In this tutorial we will show how to automate the routing of calls from
 customers to your support agents. Customers will be able to select a
-product and wait while Task Router tries to contact a product
+product and wait while TaskRouter tries to contact a product
 specialist for the best support experience. If no one is available, our
 application will also save the customer number and selected product,
 allowing us to call later.
 This is what the application does at a high level:
 1 - Configure a workspace using the Twilio REST API
 1 - Listen for incoming calls, playing a message telling user to select a product
-1 - Create a Task from the selected product, asking Task Router to handle it
+1 - Create a Task from the selected product, asking TaskRouter to handle it
 1 - Listen for missed calls and show them for agents to call back</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.djangoproject.com/start/">Getting Started with Django</a></li>
+<li><a href="//www.twilio.com/docs/quickstart/python/taskrouter">Getting Started with Twilio TaskRouter</a></li>
+</ul>
 </div><div data-title="Configuring the Workspace" data-file="task_router/workspace.py" data-highlight="14-17,41-97" class="step"><h2 id="configuring-the-workspace">Configuring the Workspace</h2>
-<p>In order to instruct Task Router to handle the Tasks, we need to quickly
-configure a Workspace. This is possible either using the <a href="https://www.twilio.com/user/account/taskrouter/workspaces">Task Router
+<p>In order to instruct TaskRouter to handle the Tasks, we need to quickly
+configure a Workspace. This is possible either using the <a href="//www.twilio.com/user/account/taskrouter/workspaces">TaskRouter
 Dashboard</a> or
-programatically.</p>
-<p>A Workspace is the container element for any Task Router application. The
-elements are: Tasks - Represents a customer trying to contact an agent
-Workers - The agents responsible for handling Tasks Task Queues - Holds
-Tasks to be consumed by a set of Workers Workflows - Responsible for
-matching Tasks into Task Queues Activities - Possible states of a Worker.
-Eg: idle, offline, busy</p>
-<p>This application configures a Workspace using the <a href="python-api-library">Twilio REST
-API</a> through the <code>configure_workspace</code> <a href="">Django
-Command</a>, <a href="">check it out here</a>.  For our example application we have
-created two workers (Bob and Alice) and each one of them respond to a
-specific product call.</p>
+programatically throught <a href="api-main">TaskRouter REST API</a>.</p>
+<p>A <a href="workspaces-doc">Workspace</a> is the container element for any TaskRouter application. The
+elements are:</p>
+<ul>
+<li><a href="tasks-doc">Tasks</a> - Represents a customer trying to contact an agent</li>
+<li><a href="workers-doc">Workers</a> - The agents responsible for handling Tasks</li>
+<li><a href="queues-doc">Task Queues</a> - Holds Tasks to be consumed by a set of Workers</li>
+<li><a href="workflows-doc">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
+<li><a href="activities-doc">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
+</ul>
+<p>This application configures a Workspace using the <a href="python-api-doc">Python Twilio REST
+API</a> through the <code>configure_workspace</code> <a href="django-command">Django
+Command</a>, <a href="workspace-command-github">check it out here</a>.
+For our example application we have created two workers (Bob and Alice)
+and each one of them respond to a specific product.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="django-commands">Django Management Commands</a></li>
+<li><a href="api-main">TaskRouter: REST API Reference</a></li>
+<li><a href="python-api-doc">TaskRouter: Python API Documentation</a></li>
+</ul>
 </div><div data-title="Responding To A Twilio Request" data-file="task_router/views.py" data-highlight="24-30" class="step"><h2 id="responding-to-a-twilio-request">Responding To A Twilio Request</h2>
-<p>Right after receiving a call or an SMS, Twilio will send a request to the
+<p>Right after receiving a call, Twilio will send a request to the
 URL specified on the number&#39;s configuration.</p>
-<p>The endpoint will then process the request. In case the request is not an
-answer from a previous question the application will build and return a
-welcome message to the user. For phone users, the built message will
-contain a Say verb with the message or a Message Verb for SMS.</p>
-<p>It will also include a Redirect verb to the question&#39;s endpoint to
-continue with the survey flow.  Text: Generate a TwiML telling the number
-of each product and asking twilio to gather the key pressed on dial pad.</p>
+<p>The endpoint will then process the request and generate a TwiML response.
+We&#39;ll use the Say verb to give the user product alternatives, and a key
+they can press in order to select one. The Gather verb allows us to
+capture the user&#39;s keypress.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/platform/webhooks">Twilio webhooks</a></li>
+<li><a href="//www.twilio.com/docs/api/twiml/your_response">TwiML Voice: Your Response</a></li>
+<li><a href="//www.twilio.com/docs/api/twiml/say">TwiML Voice: &lt;Say&gt; verb</a></li>
+<li><a href="//www.twilio.com/docs/api/twiml/gather">TwiML Voice: &lt;Gather&gt; verb</a></li>
+</ul>
 </div><div data-title="Creating a Task" data-file="task_router/views.py" data-highlight="33-41" class="step"><h2 id="creating-a-task">Creating a Task</h2>
-<p>This is the endpoint used as a callback when a user presses a key during
-the call. Based on the pressed digit, a <code>Task</code> will be created, holding
+<p>This is the endpoint set as <code>action</code> URL on the <code>Gather</code> verb for the
+previous step. It is fired after the user presses a key during the call.
+This request has a <code>Digits</code> parameter telling which key was pressed.
+Based on the pressed digit, a <code>Task</code> will be created, holding
 <code>selected_product</code> as an attribute. The Workflow will take this Task&#39;s
 attributes and match with the <a href="https://www.twilio.com/docs/api/taskrouter/expression-syntax">configured
 expressions</a>
-in order to find an appropriate available Worker.  To achieve this, we
-use the <a href=""><code>Enqueue</code> verb</a> to <a href="https://www.twilio.com/docs/api/taskrouter/twiml-integration">integrate with
-TaskRouter</a>.
-This integration happens when we specify a WorkflowSid on the verb.</p>
+in order to find an appropriate available Worker.</p>
+<p>We use the <a href="enqueue-verb"><code>Enqueue</code> verb</a> to <a href="integration-doc">integrate with
+TaskRouter</a>. This integration happens when we specify a
+WorkflowSid on the verb.</p>
+<h2 id="-enqueue-verb-www-twilio-com-docs-api-twiml-enqueue">[enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue</h2>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/twiml/twilio_request">TwiML Voice: Twilio&#39;s Request</a></li>
+<li><a href="//www.twilio.com/docs/api/twiml/gather#attributes-action-parameters">TwiML Voice: &lt;Gather&gt; callback attributes</a></li>
+<li><a href="enqueue-verb">TwiML Voice: &lt;Enqueue&gt; verb</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">TaskRouter: Using &lt;Enqueue&gt; to route calls with TaskRouter</a></li>
+</ul>
 </div><div data-title="Assigning a worker" data-file="task_router/views.py" data-highlight="44-49" class="step"><h2 id="assigning-a-worker">Assigning a worker</h2>
 <p>When TaskRouter selects a Worker to handle a Task it makes an HTTP
 request to this endpoint, which was configured using the
-<a href="django command"><code>configure_workspace</code></a> Django command. Handling this
-<a href="">Assignment Callback</a> is a key component of building a TaskRouter
+<a href="workspace-command-github"><code>configure_workspace</code></a> Django command. Handling this
+<a href="assignment-callback">Assignment Callback</a> is a key component of building a TaskRouter
 application. </p>
-<p>Here, we will <a href="">instruct</a> TaskRouter to <a href="">dequeue</a> the call that was
+<p>Here, we will <a href="dequeue-section">instruct TaskRouter to dequeue</a> the call that was
 enqueued on the previous step. We also send a <code>post_work_activity_sid</code>
-which will tell Task Router which Activity to assign this worker after
+which will tell TaskRouter which <a href="activities">Activity</a> to assign this worker after
 the call ends.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="assignment-callback">Assigning Tasks to Workers: Handling Assignment Callbacks</a></li>
+<li><a href="dequeue-section">Assigning Tasks to Workers: Dequeue a call from a TwiML queue</a></li>
+<li><a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">TaskRouter Quickstart: Understanding Activities</a></li>
+</ul>
 </div><div data-title="Collecting missed calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting missed calls</h2>
-<p>This endpoint will be called after each <a href="https://www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter
-Event</a> is
-fired. In our application, we are trying to collect missed calls, so it&#39;s
-interesting to pick <code>workflow.timeout</code>. This event is triggered when the
-Task waits more than the limit set on Workflow Configuration, which
+<p>This endpoint will be called after each <a href="event-types">TaskRouter Event</a>
+is fired. In our application, we are trying to collect missed calls, so
+it&#39;s interesting to pick <code>workflow.timeout</code>. This event is triggered when
+the Task waits more than the limit set on Workflow Configuration, which
 happens when no available worker is found after trying out all possible
-Task Queues configured as rules for this Workflow.  Here we hang up and
-store it on the database to be able to call this user later, but Task
-Router gives us plenty of options. One of them is to input another Task
-to a Task Queue of missed calls, which can wait longer until a worker is
-available to call the customer back.  Note that we are also listening for
-<code>task.canceled</code>. This is triggered when the customer hangs up before
-being assigned to a worker, cancelling the task. Capturing this event
-allow us to collect also the customers that gave up before Workflow
-timeout.</p>
+Task Queues configured as rules for this Workflow.</p>
+<p>Here we hang up and store it on the database to be able to call this user
+later, but TaskRouter gives us plenty of options. One of them is to
+input another Task to a Task Queue of missed calls, which can wait longer
+until a worker is available to call the customer back.</p>
+<p>Note that we are also listening for <code>task.canceled</code>. This is triggered
+when the customer hangs up before being assigned to a worker, cancelling
+the task. Capturing this event allow us to collect also the
+customers that gave up before Workflow timeout.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/taskrouter/events">TaskRouter: Events</a></li>
+<li><a href="event-types">TaskRouter: Event types</a></li>
+</ul>
 </div></div>
 <div class="saurus-files" style="display:none;"><textarea class="saurus-file" data-file="task_router/urls.py" data-mode="python">ZnJvbSBkamFuZ28uY29uZi51cmxzIGltcG9ydCB1cmwKCmZyb20gLnZpZXdzIGltcG9ydCByb290CmZyb20gLnZpZXdzIGltcG9ydCBpbmNvbWluZ19jYWxsCmZyb20gLnZpZXdzIGltcG9ydCBlbnF1ZXVlCmZyb20gLnZpZXdzIGltcG9ydCBhc3NpZ25tZW50CmZyb20gLnZpZXdzIGltcG9ydCBldmVudHMKCnVybHBhdHRlcm5zID0gWwogICAgIyBVUkxzIGZvciBzZWFyY2hpbmcgZm9yIGFuZCBwdXJjaGFzaW5nIGEgbmV3IFR3aWxpbyBudW1iZXIKICAgIHVybChyJ14kJywgcm9vdCwgbmFtZT0ncm9vdCcpLAogICAgdXJsKHInXmNhbGwvaW5jb21pbmcvPyQnLCBpbmNvbWluZ19jYWxsLCBuYW1lPSdpbmNvbWluZ19jYWxsJyksCiAgICB1cmwocideY2FsbC9lbnF1ZXVlLz8kJywgZW5xdWV1ZSwgbmFtZT0nZW5xdWV1ZScpLAogICAgdXJsKHInXmFzc2lnbm1lbnQvPyQnLCBhc3NpZ25tZW50LCBuYW1lPSdhc3NpZ25tZW50JyksCiAgICB1cmwocideZXZlbnRzLz8kJywgZXZlbnRzLCBuYW1lPSdldmVudHMnKQpdCg==</textarea>
 <textarea class="saurus-file" data-file="task_router/workspace.py" data-mode="python">ZnJvbSB0d2lsaW8ucmVzdCBpbXBvcnQgVHdpbGlvVGFza1JvdXRlckNsaWVudApmcm9tIHR3aWxpby50YXNrX3JvdXRlci53b3JrZmxvd19ydWxldGFyZ2V0IGltcG9ydCBXb3JrZmxvd1J1bGVUYXJnZXQKZnJvbSB0d2lsaW8udGFza19yb3V0ZXIud29ya2Zsb3dfcnVsZSBpbXBvcnQgV29ya2Zsb3dSdWxlCmZyb20gdHdpbGlvLnRhc2tfcm91dGVyLndvcmtmbG93X2NvbmZpZyBpbXBvcnQgV29ya2Zsb3dDb25maWcKZnJvbSBkamFuZ28uY29uZiBpbXBvcnQgc2V0dGluZ3MKaW1wb3J0IGpzb24KCgpkZWYgZmlyc3QoaXRlbXMpOgogICAgaXRlbXMgPSBsaXN0KGl0ZW1zKQogICAgcmV0dXJuIGl0ZW1zWzBdIGlmIGl0ZW1zIGVsc2UgTm9uZQoKCmRlZiBidWlsZF9jbGllbnQoKToKICAgIGFjY291bnRfc2lkID0gc2V0dGluZ3MuVFdJTElPX0FDQ09VTlRfU0lECiAgICBhdXRoX3Rva2VuID0gc2V0dGluZ3MuVFdJTElPX0FVVEhfVE9LRU4KICAgIHJldHVybiBUd2lsaW9UYXNrUm91dGVyQ2xpZW50KGFjY291bnRfc2lkLCBhdXRoX3Rva2VuKQoKCmRlZiBnZXRfYnlfbmFtZShuYW1lKToKICAgIHdvcmtzcGFjZXMgPSBidWlsZF9jbGllbnQoKS53b3Jrc3BhY2VzLmxpc3QoKQogICAgcmV0dXJuIGZpcnN0KGZpbHRlcihsYW1iZGEgd29ya3NwYWNlOiB3b3Jrc3BhY2UuZnJpZW5kbHlfbmFtZSA9PSBuYW1lLCB3b3Jrc3BhY2VzKSkKCgpkZWYgZGVsZXRlKG5hbWUpOgogICAgd29ya3NwYWNlID0gZ2V0X2J5X25hbWUobmFtZSkKICAgIGJ1aWxkX2NsaWVudCgpLndvcmtzcGFjZXMuZGVsZXRlKHdvcmtzcGFjZS5zaWQpCgoKZGVmIGNyZWF0ZShuYW1lLCBldmVudF9jYWxsYmFjayk6CiAgICBjbGllbnQgPSBidWlsZF9jbGllbnQoKQogICAgd29ya3NwYWNlID0gZ2V0X2J5X25hbWUobmFtZSkKICAgIGlmIG5vdCB3b3Jrc3BhY2U6CiAgICAgICAgd29ya3NwYWNlID0gY2xpZW50LndvcmtzcGFjZXMuY3JlYXRlKAogICAgICAgICAgICAgICAgZnJpZW5kbHlfbmFtZT1uYW1lLAogICAgICAgICAgICAgICAgZXZlbnRfY2FsbGJhY2tfdXJsPWV2ZW50X2NhbGxiYWNrLAogICAgICAgICAgICAgICAgdGVtcGxhdGU9Tm9uZSkKICAgIHJldHVybiBXb3Jrc3BhY2Uod29ya3NwYWNlKQoKCmNsYXNzIFdvcmtzcGFjZSgpOgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCB3b3Jrc3BhY2UpOgogICAgICAgIHNlbGYuc2lkID0gd29ya3NwYWNlLnNpZAogICAgICAgIHNlbGYuY2xpZW50ID0gYnVpbGRfY2xpZW50KCkKCiAgICBkZWYgYWRkX3dvcmtlcihzZWxmLCBuYW1lLCBhdHRyaWJ1dGVzKToKICAgICAgICB3b3JrZXIgPSBzZWxmLmNsaWVudC53b3JrZXJzKHNlbGYuc2lkKS5jcmVhdGUoCiAgICAgICAgICAgIGFjdGl2aXR5X3NpZD1zZWxmLmdldF9hY3Rpdml0eV9ieV9uYW1lKCdJZGxlJykuc2lkLAogICAgICAgICAgICBmcmllbmRseV9uYW1lPW5hbWUsCiAgICAgICAgICAgIGF0dHJpYnV0ZXM9anNvbi5kdW1wcyhhdHRyaWJ1dGVzKSkKICAgICAgICByZXR1cm4gd29ya2VyCgogICAgZGVmIGFkZF9xdWV1ZShzZWxmLCBuYW1lLCB3b3JrZXJfcXVlcnkpOgogICAgICAgIHJlc2VydmF0aW9uX2FjdGl2aXR5ID0gc2VsZi5nZXRfYWN0aXZpdHlfYnlfbmFtZSgnUmVzZXJ2ZWQnKQogICAgICAgIGFzc2lnbm1lbnRfYWN0aXZpdHkgPSBzZWxmLmdldF9hY3Rpdml0eV9ieV9uYW1lKCdCdXN5JykKICAgICAgICBxdWV1ZSA9IHNlbGYuY2xpZW50LnRhc2tfcXVldWVzKHNlbGYuc2lkKS5jcmVhdGUoCiAgICAgICAgICAgICAgICBmcmllbmRseV9uYW1lPW5hbWUsCiAgICAgICAgICAgICAgICByZXNlcnZhdGlvbl9hY3Rpdml0eV9zaWQ9cmVzZXJ2YXRpb25fYWN0aXZpdHkuc2lkLAogICAgICAgICAgICAgICAgYXNzaWdubWVudF9hY3Rpdml0eV9zaWQ9YXNzaWdubWVudF9hY3Rpdml0eS5zaWQsCiAgICAgICAgICAgICAgICB0YXJnZXRfd29ya2Vycz13b3JrZXJfcXVlcnkKICAgICAgICAgICAgICAgICkKICAgICAgICByZXR1cm4gcXVldWUKCiAgICBkZWYgYWRkX3dvcmtmbG93KHNlbGYsIG5hbWUsIGNhbGxiYWNrPSdodHRwOi8vZXhhbXBsZS5jb20vJywKICAgICAgICAgICAgICAgICAgICAgdGltZW91dD0zMCwgY29uZmlndXJhdGlvbj1Ob25lKToKICAgICAgICB3b3JrZmxvdyA9IHNlbGYuY2xpZW50LndvcmtmbG93cyhzZWxmLnNpZCkuY3JlYXRlKAogICAgICAgICAgICBmcmllbmRseV9uYW1lPW5hbWUsCiAgICAgICAgICAgIGFzc2lnbm1lbnRfY2FsbGJhY2tfdXJsPWNhbGxiYWNrLAogICAgICAgICAgICBmYWxsYmFja19hc3NpZ25tZW50X2NhbGxiYWNrX3VybD1jYWxsYmFjaywKICAgICAgICAgICAgdGFza19yZXNlcnZhdGlvbl90aW1lb3V0PXN0cih0aW1lb3V0KSwKICAgICAgICAgICAgY29uZmlndXJhdGlvbj1zZWxmLmdldF93b3JrZmxvd19qc29uX2NvbmZpZ3VyYXRpb24oY29uZmlndXJhdGlvbikpCiAgICAgICAgcmV0dXJuIHdvcmtmbG93CgogICAgZGVmIGdldF9hY3Rpdml0eV9ieV9uYW1lKHNlbGYsIG5hbWUpOgogICAgICAgIGFjdGl2aXRpZXMgPSBzZWxmLmNsaWVudC5hY3Rpdml0aWVzKHNlbGYuc2lkKS5saXN0KCkKICAgICAgICByZXR1cm4gZmlyc3QoZmlsdGVyKGxhbWJkYSBhY3Rpdml0eTogYWN0aXZpdHkuZnJpZW5kbHlfbmFtZSA9PSBuYW1lLCBhY3Rpdml0aWVzKSkKCiAgICBkZWYgZ2V0X3F1ZXVlX2J5X25hbWUoc2VsZiwgbmFtZSk6CiAgICAgICAgcXVldWVzID0gc2VsZi5jbGllbnQudGFza19xdWV1ZXMoc2VsZi5zaWQpLmxpc3QoKQogICAgICAgIHJldHVybiBmaXJzdChmaWx0ZXIobGFtYmRhIHF1ZXVlOiBxdWV1ZS5mcmllbmRseV9uYW1lID09IG5hbWUsIHF1ZXVlcykpCgogICAgZGVmIGdldF93b3JrZmxvd19qc29uX2NvbmZpZ3VyYXRpb24oc2VsZiwgY29uZmlndXJhdGlvbik6CiAgICAgICAgZGVmYXVsdF9xdWV1ZSA9IHNlbGYuZ2V0X3F1ZXVlX2J5X25hbWUoJ0RlZmF1bHQnKQogICAgICAgIGRlZmF1bHRSdWxlVGFyZ2V0ID0gV29ya2Zsb3dSdWxlVGFyZ2V0KGRlZmF1bHRfcXVldWUuc2lkLCAnMT09MScsIDEsIDMwKQoKICAgICAgICBydWxlcyA9IFtdCiAgICAgICAgZm9yIHJ1bGUgaW4gY29uZmlndXJhdGlvbjoKICAgICAgICAgICAgcXVldWUgPSBzZWxmLmdldF9xdWV1ZV9ieV9uYW1lKHJ1bGVbJ3RhcmdldFRhc2tRdWV1ZSddKQogICAgICAgICAgICBxdWV1ZVJ1bGVUYXJnZXRzID0gW10KICAgICAgICAgICAgcXVldWVSdWxlVGFyZ2V0ID0gV29ya2Zsb3dSdWxlVGFyZ2V0KHF1ZXVlLnNpZCwgTm9uZSwgNSwgMzApCiAgICAgICAgICAgIHF1ZXVlUnVsZVRhcmdldHMuYXBwZW5kKHF1ZXVlUnVsZVRhcmdldCkKICAgICAgICAgICAgcXVldWVSdWxlVGFyZ2V0cy5hcHBlbmQoZGVmYXVsdFJ1bGVUYXJnZXQpCiAgICAgICAgICAgIHJ1bGVzLmFwcGVuZChXb3JrZmxvd1J1bGUocnVsZVsnZXhwcmVzc2lvbiddLCBxdWV1ZVJ1bGVUYXJnZXRzLCBOb25lKSkKCiAgICAgICAgY29uZmlnID0gV29ya2Zsb3dDb25maWcocnVsZXMsIE5vbmUpCiAgICAgICAgcmV0dXJuIGNvbmZpZy50b19qc29uKCkK</textarea>
