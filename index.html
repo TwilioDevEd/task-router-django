@@ -15,12 +15,18 @@ customers to your support agents. Customers will be able to select a
 product and wait while TaskRouter tries to contact a product
 specialist for the best support experience. If no one is available, our
 application will also save the customer number and selected product,
-allowing us to call later.
-This is what the application does at a high level:
-1 - Configure a workspace using the Twilio REST API
-1 - Listen for incoming calls, playing a message telling user to select a product
-1 - Create a Task from the selected product, asking TaskRouter to handle it
-1 - Listen for missed calls and show them for agents to call back</p>
+allowing us to call later.</p>
+<p>This is what the application does at a high level:</p>
+<ol>
+<li><p>Configure a workspace using the Twilio REST API</p>
+</li>
+<li><p>Listen for incoming calls, playing a message telling user to select a product</p>
+</li>
+<li><p>Create a Task from the selected product, asking TaskRouter to handle it</p>
+</li>
+<li><p>Listen for missed calls and show them for agents to call back</p>
+</li>
+</ol>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -31,27 +37,27 @@ This is what the application does at a high level:
 <p>In order to instruct TaskRouter to handle the Tasks, we need to quickly
 configure a Workspace. This is possible either using the <a href="//www.twilio.com/user/account/taskrouter/workspaces">TaskRouter
 Dashboard</a> or
-programatically throught <a href="api-main">TaskRouter REST API</a>.</p>
-<p>A <a href="workspaces-doc">Workspace</a> is the container element for any TaskRouter application. The
+programatically throught <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
+<p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter application. The
 elements are:</p>
 <ul>
-<li><a href="tasks-doc">Tasks</a> - Represents a customer trying to contact an agent</li>
-<li><a href="workers-doc">Workers</a> - The agents responsible for handling Tasks</li>
-<li><a href="queues-doc">Task Queues</a> - Holds Tasks to be consumed by a set of Workers</li>
-<li><a href="workflows-doc">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
-<li><a href="activities-doc">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/tasks">Tasks</a> - Represents a customer trying to contact an agent</li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/workers">Workers</a> - The agents responsible for handling Tasks</li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/taskqueues">Task Queues</a> - Holds Tasks to be consumed by a set of Workers</li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/workflows">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/activities">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
 </ul>
-<p>This application configures a Workspace using the <a href="python-api-doc">Python Twilio REST
-API</a> through the <code>configure_workspace</code> <a href="django-command">Django
-Command</a>, <a href="workspace-command-github">check it out here</a>.
+<p>This application configures a Workspace using the <a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">Python Twilio REST
+API</a> through the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
+Command</a>, <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py">check it out here</a>.
 For our example application we have created two workers (Bob and Alice)
 and each one of them respond to a specific product.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
-<li><a href="django-commands">Django Management Commands</a></li>
-<li><a href="api-main">TaskRouter: REST API Reference</a></li>
-<li><a href="python-api-doc">TaskRouter: Python API Documentation</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django Management Commands</a></li>
+<li><a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter: REST API Reference</a></li>
+<li><a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">TaskRouter: Python API Documentation</a></li>
 </ul>
 </div><div data-title="Responding To A Twilio Request" data-file="task_router/views.py" data-highlight="24-30" class="step"><h2 id="responding-to-a-twilio-request">Responding To A Twilio Request</h2>
 <p>Right after receiving a call, Twilio will send a request to the
@@ -77,36 +83,36 @@ Based on the pressed digit, a <code>Task</code> will be created, holding
 attributes and match with the <a href="https://www.twilio.com/docs/api/taskrouter/expression-syntax">configured
 expressions</a>
 in order to find an appropriate available Worker.</p>
-<p>We use the <a href="enqueue-verb"><code>Enqueue</code> verb</a> to <a href="integration-doc">integrate with
+<p>We use the <a href="//www.twilio.com/docs/api/twiml/enqueue"><code>Enqueue</code> verb</a> to <a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">integrate with
 TaskRouter</a>. This integration happens when we specify a
 WorkflowSid on the verb.</p>
-<h2 id="-enqueue-verb-www-twilio-com-docs-api-twiml-enqueue">[enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue</h2>
+<hr>
 <p><strong>See Also:</strong></p>
 <ul>
 <li><a href="//www.twilio.com/docs/api/twiml/twilio_request">TwiML Voice: Twilio&#39;s Request</a></li>
 <li><a href="//www.twilio.com/docs/api/twiml/gather#attributes-action-parameters">TwiML Voice: &lt;Gather&gt; callback attributes</a></li>
-<li><a href="enqueue-verb">TwiML Voice: &lt;Enqueue&gt; verb</a></li>
+<li><a href="//www.twilio.com/docs/api/twiml/enqueue">TwiML Voice: &lt;Enqueue&gt; verb</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">TaskRouter: Using &lt;Enqueue&gt; to route calls with TaskRouter</a></li>
 </ul>
 </div><div data-title="Assigning a worker" data-file="task_router/views.py" data-highlight="44-49" class="step"><h2 id="assigning-a-worker">Assigning a worker</h2>
 <p>When TaskRouter selects a Worker to handle a Task it makes an HTTP
 request to this endpoint, which was configured using the
-<a href="workspace-command-github"><code>configure_workspace</code></a> Django command. Handling this
-<a href="assignment-callback">Assignment Callback</a> is a key component of building a TaskRouter
+<a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command. Handling this
+<a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks">Assignment Callback</a> is a key component of building a TaskRouter
 application. </p>
-<p>Here, we will <a href="dequeue-section">instruct TaskRouter to dequeue</a> the call that was
+<p>Here, we will <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call that was
 enqueued on the previous step. We also send a <code>post_work_activity_sid</code>
-which will tell TaskRouter which <a href="activities">Activity</a> to assign this worker after
+which will tell TaskRouter which <a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">Activity</a> to assign this worker after
 the call ends.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
-<li><a href="assignment-callback">Assigning Tasks to Workers: Handling Assignment Callbacks</a></li>
-<li><a href="dequeue-section">Assigning Tasks to Workers: Dequeue a call from a TwiML queue</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks">Assigning Tasks to Workers: Handling Assignment Callbacks</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">Assigning Tasks to Workers: Dequeue a call from a TwiML queue</a></li>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">TaskRouter Quickstart: Understanding Activities</a></li>
 </ul>
 </div><div data-title="Collecting missed calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting missed calls</h2>
-<p>This endpoint will be called after each <a href="event-types">TaskRouter Event</a>
+<p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
 is fired. In our application, we are trying to collect missed calls, so
 it&#39;s interesting to pick <code>workflow.timeout</code>. This event is triggered when
 the Task waits more than the limit set on Workflow Configuration, which
@@ -124,7 +130,7 @@ customers that gave up before Workflow timeout.</p>
 <p><strong>See Also:</strong></p>
 <ul>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events">TaskRouter: Events</a></li>
-<li><a href="event-types">TaskRouter: Event types</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter: Event types</a></li>
 </ul>
 </div></div>
 <div class="saurus-files" style="display:none;"><textarea class="saurus-file" data-file="task_router/urls.py" data-mode="python">ZnJvbSBkamFuZ28uY29uZi51cmxzIGltcG9ydCB1cmwKCmZyb20gLnZpZXdzIGltcG9ydCByb290CmZyb20gLnZpZXdzIGltcG9ydCBpbmNvbWluZ19jYWxsCmZyb20gLnZpZXdzIGltcG9ydCBlbnF1ZXVlCmZyb20gLnZpZXdzIGltcG9ydCBhc3NpZ25tZW50CmZyb20gLnZpZXdzIGltcG9ydCBldmVudHMKCnVybHBhdHRlcm5zID0gWwogICAgIyBVUkxzIGZvciBoYW5kbGluZyBUYXNrUm91dGVyIHJlcXVlc3RzCiAgICB1cmwocideJCcsIHJvb3QsIG5hbWU9J3Jvb3QnKSwKICAgIHVybChyJ15jYWxsL2luY29taW5nLz8kJywgaW5jb21pbmdfY2FsbCwgbmFtZT0naW5jb21pbmdfY2FsbCcpLAogICAgdXJsKHInXmNhbGwvZW5xdWV1ZS8/JCcsIGVucXVldWUsIG5hbWU9J2VucXVldWUnKSwKICAgIHVybChyJ15hc3NpZ25tZW50Lz8kJywgYXNzaWdubWVudCwgbmFtZT0nYXNzaWdubWVudCcpLAogICAgdXJsKHInXmV2ZW50cy8/JCcsIGV2ZW50cywgbmFtZT0nZXZlbnRzJykKXQo=</textarea>

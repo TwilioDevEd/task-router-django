@@ -9,11 +9,16 @@
       specialist for the best support experience. If no one is available, our
       application will also save the customer number and selected product,
       allowing us to call later.
+
       This is what the application does at a high level:
-      1 - Configure a workspace using the Twilio REST API
-      1 - Listen for incoming calls, playing a message telling user to select a product
-      1 - Create a Task from the selected product, asking TaskRouter to handle it
-      1 - Listen for missed calls and show them for agents to call back
+
+      1. Configure a workspace using the Twilio REST API
+
+      1. Listen for incoming calls, playing a message telling user to select a product
+
+      1. Create a Task from the selected product, asking TaskRouter to handle it
+
+      1. Listen for missed calls and show them for agents to call back
 
       ---
       **See Also:**
@@ -28,27 +33,27 @@
       In order to instruct TaskRouter to handle the Tasks, we need to quickly
       configure a Workspace. This is possible either using the [TaskRouter
       Dashboard](//www.twilio.com/user/account/taskrouter/workspaces) or
-      programatically throught [TaskRouter REST API](api-main).
+      programatically throught [TaskRouter REST API][api-main].
 
-      A [Workspace](workspaces-doc) is the container element for any TaskRouter application. The
+      A [Workspace][workspaces-doc] is the container element for any TaskRouter application. The
       elements are:
-      * [Tasks](tasks-doc) - Represents a customer trying to contact an agent
-      * [Workers](workers-doc) - The agents responsible for handling Tasks
-      * [Task Queues](queues-doc) - Holds Tasks to be consumed by a set of Workers
-      * [Workflows](workflows-doc) - Responsible for matching Tasks into Task Queues
-      * [Activities](activities-doc) - Possible states of a Worker. Eg: idle, offline, busy
+      * [Tasks][tasks-doc] - Represents a customer trying to contact an agent
+      * [Workers][workers-doc] - The agents responsible for handling Tasks
+      * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
+      * [Workflows][workflows-doc] - Responsible for matching Tasks into Task Queues
+      * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
 
       This application configures a Workspace using the [Python Twilio REST
-      API](python-api-doc) through the `configure_workspace` [Django
-      Command](django-command), [check it out here](workspace-command-github).
+      API][python-api-doc] through the `configure_workspace` [Django
+      Command][django-commands], [check it out here][workspace-command-github].
       For our example application we have created two workers (Bob and Alice)
       and each one of them respond to a specific product.
 
       ---
       **See Also:**
-      * [Django Management Commands](django-commands)
-      * [TaskRouter: REST API Reference](api-main)
-      * [TaskRouter: Python API Documentation](python-api-doc)
+      * [Django Management Commands][django-commands]
+      * [TaskRouter: REST API Reference][api-main]
+      * [TaskRouter: Python API Documentation][python-api-doc]
       
       [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
       [python-api-doc]: http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html
@@ -95,18 +100,18 @@
       expressions](https://www.twilio.com/docs/api/taskrouter/expression-syntax)
       in order to find an appropriate available Worker.
 
-      We use the [`Enqueue` verb](enqueue-verb) to [integrate with
-      TaskRouter](integration-doc). This integration happens when we specify a
+      We use the [`Enqueue` verb][enqueue-verb] to [integrate with
+      TaskRouter][integration-doc]. This integration happens when we specify a
       WorkflowSid on the verb.
 
-      [integration-doc]: //www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter
-      [enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue
       ---
       **See Also:**
       * [TwiML Voice: Twilio's Request](//www.twilio.com/docs/api/twiml/twilio_request)
       * [TwiML Voice: <Gather> callback attributes](//www.twilio.com/docs/api/twiml/gather#attributes-action-parameters)
-      * [TwiML Voice: <Enqueue> verb](enqueue-verb)
+      * [TwiML Voice: <Enqueue> verb][enqueue-verb]
       * [TaskRouter: Using <Enqueue> to route calls with TaskRouter](//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter)
+      [integration-doc]: //www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter
+      [enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue
 
   .step(data-title='Assigning a worker', data-file='task_router/views.py',
     data-highlight='44-49')
@@ -115,32 +120,32 @@
 
       When TaskRouter selects a Worker to handle a Task it makes an HTTP
       request to this endpoint, which was configured using the
-      [`configure_workspace`](workspace-command-github) Django command. Handling this
-      [Assignment Callback](assignment-callback) is a key component of building a TaskRouter
+      [`configure_workspace`][workspace-command-github] Django command. Handling this
+      [Assignment Callback][assignment-callback] is a key component of building a TaskRouter
       application. 
 
-      Here, we will [instruct TaskRouter to dequeue](dequeue-section) the call that was
+      Here, we will [instruct TaskRouter to dequeue][dequeue-section] the call that was
       enqueued on the previous step. We also send a `post_work_activity_sid`
-      which will tell TaskRouter which [Activity](activities) to assign this worker after
+      which will tell TaskRouter which [Activity][activities] to assign this worker after
       the call ends.
+
+      ---
+      **See Also:**
+      * [Assigning Tasks to Workers: Handling Assignment Callbacks][assignment-callback]
+      * [Assigning Tasks to Workers: Dequeue a call from a TwiML queue][dequeue-section]
+      * [TaskRouter Quickstart: Understanding Activities](//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities)
 
       [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
       [assignment-callback]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks
       [dequeue-section]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call
       [activities]: //www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities
 
-      ---
-      **See Also:**
-      * [Assigning Tasks to Workers: Handling Assignment Callbacks](assignment-callback)
-      * [Assigning Tasks to Workers: Dequeue a call from a TwiML queue](dequeue-section)
-      * [TaskRouter Quickstart: Understanding Activities](//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities)
-
   .step(data-title='Collecting missed calls', data-file='task_router/views.py',
     data-highlight='52-70')
     :markdown
       ## Collecting missed calls
 
-      This endpoint will be called after each [TaskRouter Event](event-types)
+      This endpoint will be called after each [TaskRouter Event][event-types]
       is fired. In our application, we are trying to collect missed calls, so
       it's interesting to pick `workflow.timeout`. This event is triggered when
       the Task waits more than the limit set on Workflow Configuration, which
@@ -157,9 +162,9 @@
       the task. Capturing this event allow us to collect also the
       customers that gave up before Workflow timeout.
 
-      [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
-
       ---
       **See Also:**
       * [TaskRouter: Events](//www.twilio.com/docs/api/taskrouter/events)
-      * [TaskRouter: Event types](event-types)
+      * [TaskRouter: Event types][event-types]
+
+      [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
