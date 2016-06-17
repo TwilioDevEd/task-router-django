@@ -97,5 +97,5 @@ class Workspace():
             queueRuleTargets.append(defaultRuleTarget)
             rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
 
-        config = WorkflowConfig(rules, None)
+        config = WorkflowConfig(rules, defaultRuleTarget)
         return config.to_json()
