@@ -7,8 +7,8 @@
       customers to your support agents. Customers will be able to select a
       product and wait while TaskRouter tries to contact a product
       specialist for the best support experience. If no one is available, our
-      application will also save the customer number and selected product so
-      an agent can call them back.
+      application will save the customer's number and selected product so
+      an agent can call them back later on.
 
       This is what the application does at a high level:
 
@@ -35,8 +35,8 @@
       Dashboard](//www.twilio.com/user/account/taskrouter/workspaces) or
       programmatically through [TaskRouter REST API][api-main].
 
-      A [Workspace][workspaces-doc] is the container element for any TaskRouter application. The
-      elements are:
+      A [Workspace][workspaces-doc] is the container element for any TaskRouter
+      application. The elements are:
       * [Tasks][tasks-doc] - Represents a customer trying to contact an agent
       * [Workers][workers-doc] - The agents responsible for handling Tasks
       * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
@@ -46,20 +46,20 @@
       This application uses the `configure_workspace` [Django
       Command][django-commands], [check it out here][workspace-command-github].
       For our example application we have created two workers (Bob and Alice)
-      and each one of them receive calls for a specific product.
+      and each one of them receives calls for a specific product.
 
       ---
       **See Also:**
       * [Django Management Commands][django-commands]
       * [TaskRouter: REST API Reference][api-main]
       * [TaskRouter: Python API Documentation][python-api-doc]
-      
+
       [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
       [python-api-doc]: http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html
       [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
       [api-main]: https://www.twilio.com/docs/api/taskrouter/rest-api
       [workspaces-doc]: https://www.twilio.com/docs/api/taskrouter/workspaces
-      [workflows-doc]: https://www.twilio.com/docs/api/taskrouter/workflows 
+      [workflows-doc]: https://www.twilio.com/docs/api/taskrouter/workflows
       [queues-doc]: https://www.twilio.com/docs/api/taskrouter/taskqueues
       [tasks-doc]: https://www.twilio.com/docs/api/taskrouter/tasks
       [workers-doc]: https://www.twilio.com/docs/api/taskrouter/workers
@@ -90,8 +90,9 @@
     :markdown
       ## Creating a Task
 
-      This is the endpoint set as the `action` URL on the `Gather` verb for the
-      previous step. A request is made to this endpoint when the user presses a key during the call.
+      This is the endpoint set as the `action` URL on the `Gather` verb on the
+      previous step. A request is made to this endpoint when the user presses
+      a key during the call.
       This request has a `Digits` parameter that holds the pressed keys.
       A `Task` will be created based on the pressed digit with the
       `selected_product` as an attribute. The Workflow will take this Task's
@@ -121,7 +122,7 @@
       request to this endpoint, which was configured using the
       [`configure_workspace`][workspace-command-github] Django command. Handling this
       [Assignment Callback][assignment-callback] is a key component of building a TaskRouter
-      application. 
+      application.
 
       Here, we will [instruct TaskRouter to dequeue][dequeue-section] the call that was
       enqueued on the previous step. We also send a `post_work_activity_sid`
@@ -155,9 +156,9 @@
       later.
 
       Note that we are also listening for `task.canceled`. This is triggered
-      when the customer hangs up before being assigned to a worker, cancelling
-      the task. Capturing this event allow us to collect also the
-      customers that hung up before the Workflow timeouts.
+      when the customer hangs up before being assigned to an agent, therefore
+      cancelling the task. Capturing this event allows us to collect the
+      information from the customers that hang up before the Workflow times out.
 
       ---
       **See Also:**
@@ -176,12 +177,12 @@
 
       [**Appointment-Reminders**](//www.twilio.com/docs/tutorials/walkthrough/appointment-reminders/python/django)
 
-      Automate the process of reaching out to your customers in advance of an upcoming appointment.
+      Automate the process of reaching out to your customers prior to an upcoming appointment.
 
       [**Automated-Survey-Django**](//www.twilio.com/docs/tutorials/walkthrough/automated-survey/python/django)
 
       Instantly collect structured data from your users with a survey conducted over a call or SMS text messages.
 
-      Thanks for checking out this tutorial! If you have any feedback
+      Thanks for checking this tutorial out! If you have any feedback
       to share with us, we'd love to hear it.
       [Contact the Twilio Developer Education Team](mailto:deved-oss@twilio.com) to let us know what you think.

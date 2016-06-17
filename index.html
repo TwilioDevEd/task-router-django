@@ -14,8 +14,8 @@
 customers to your support agents. Customers will be able to select a
 product and wait while TaskRouter tries to contact a product
 specialist for the best support experience. If no one is available, our
-application will also save the customer number and selected product so
-an agent can call them back.</p>
+application will save the customer&#39;s number and selected product so
+an agent can call them back later on.</p>
 <p>This is what the application does at a high level:</p>
 <ol>
 <li><p>Configure a workspace using the Twilio REST API.</p>
@@ -38,8 +38,8 @@ an agent can call them back.</p>
 configure a Workspace. This is possible either using the <a href="//www.twilio.com/user/account/taskrouter/workspaces">TaskRouter
 Dashboard</a> or
 programmatically through <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
-<p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter application. The
-elements are:</p>
+<p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter
+application. The elements are:</p>
 <ul>
 <li><a href="https://www.twilio.com/docs/api/taskrouter/tasks">Tasks</a> - Represents a customer trying to contact an agent</li>
 <li><a href="https://www.twilio.com/docs/api/taskrouter/workers">Workers</a> - The agents responsible for handling Tasks</li>
@@ -50,7 +50,7 @@ elements are:</p>
 <p>This application uses the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
 Command</a>, <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py">check it out here</a>.
 For our example application we have created two workers (Bob and Alice)
-and each one of them receive calls for a specific product.</p>
+and each one of them receives calls for a specific product.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -74,8 +74,9 @@ capture the user&#39;s keypress.</p>
 <li><a href="//www.twilio.com/docs/api/twiml/gather">TwiML Voice: &lt;Gather&gt; verb</a></li>
 </ul>
 </div><div data-title="Creating a Task" data-file="task_router/views.py" data-highlight="33-41" class="step"><h2 id="creating-a-task">Creating a Task</h2>
-<p>This is the endpoint set as the <code>action</code> URL on the <code>Gather</code> verb for the
-previous step. A request is made to this endpoint when the user presses a key during the call.
+<p>This is the endpoint set as the <code>action</code> URL on the <code>Gather</code> verb on the
+previous step. A request is made to this endpoint when the user presses
+a key during the call.
 This request has a <code>Digits</code> parameter that holds the pressed keys.
 A <code>Task</code> will be created based on the pressed digit with the
 <code>selected_product</code> as an attribute. The Workflow will take this Task&#39;s
@@ -98,7 +99,7 @@ WorkflowSid on the verb.</p>
 request to this endpoint, which was configured using the
 <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command. Handling this
 <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks">Assignment Callback</a> is a key component of building a TaskRouter
-application. </p>
+application.</p>
 <p>Here, we will <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call that was
 enqueued on the previous step. We also send a <code>post_work_activity_sid</code>
 which will tell TaskRouter which <a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">Activity</a> to assign this worker after
@@ -120,9 +121,9 @@ Task Queues configured as rules for this Workflow.</p>
 <p>Here we hang up and store the call information in the database to be able to call this user
 later.</p>
 <p>Note that we are also listening for <code>task.canceled</code>. This is triggered
-when the customer hangs up before being assigned to a worker, cancelling
-the task. Capturing this event allow us to collect also the
-customers that hung up before the Workflow timeouts.</p>
+when the customer hangs up before being assigned to an agent, therefore
+cancelling the task. Capturing this event allows us to collect the
+information from the customers that hang up before the Workflow times out.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -134,10 +135,10 @@ customers that hung up before the Workflow timeouts.</p>
 <p>If you&#39;re a Python developer working with
 Twilio, you might enjoy these other tutorials:</p>
 <p><a href="//www.twilio.com/docs/tutorials/walkthrough/appointment-reminders/python/django"><strong>Appointment-Reminders</strong></a></p>
-<p>Automate the process of reaching out to your customers in advance of an upcoming appointment.</p>
+<p>Automate the process of reaching out to your customers prior to an upcoming appointment.</p>
 <p><a href="//www.twilio.com/docs/tutorials/walkthrough/automated-survey/python/django"><strong>Automated-Survey-Django</strong></a></p>
 <p>Instantly collect structured data from your users with a survey conducted over a call or SMS text messages.</p>
-<p>Thanks for checking out this tutorial! If you have any feedback
+<p>Thanks for checking this tutorial out! If you have any feedback
 to share with us, we&#39;d love to hear it.
 <a href="mailto:deved-oss@twilio.com">Contact the Twilio Developer Education Team</a> to let us know what you think.</p>
 </div></div>
