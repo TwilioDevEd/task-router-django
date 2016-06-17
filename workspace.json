@@ -56,7 +56,7 @@
   "workflow": {
       "name": "Sales",
       "callback": "%(host)s/assignment",
-      "timeout": "30",
+      "timeout": "60",
       "routingConfiguration": [
         {
           "expression": "selected_product==\"ProgrammableSMS\"",
