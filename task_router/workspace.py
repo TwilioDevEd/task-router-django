@@ -35,7 +35,11 @@ def create(name, event_callback):
                 friendly_name=name,
                 event_callback_url=event_callback,
                 template=None)
-    return Workspace(workspace)
+    workspace = Workspace(workspace)
+    client.workspaces.update(
+            workspace.sid,
+            timeout_activity_sid=workspace.get_activity_by_name('Idle').sid)
+    return workspace
 
 
 class Workspace():
@@ -93,5 +97,5 @@ class Workspace():
             queueRuleTargets.append(defaultRuleTarget)
             rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
 
-        config = WorkflowConfig(rules, None)
+        config = WorkflowConfig(rules, defaultRuleTarget)
         return config.to_json()

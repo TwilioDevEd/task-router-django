@@ -37,8 +37,11 @@ class WorkspaceTests(TestCase):
     @patch('task_router.workspace.get_by_name')
     def test_create_workspace(self, get_workspace_mock):
         workspaces_mock = Mock()
+        activities_mock = Mock()
+        activities_mock.list.return_value = [Mock(friendly_name='Idle', sid='idleSid')]
         get_workspace_mock.return_value = None
         self.router_client_mock.workspaces = workspaces_mock
+        self.router_client_mock.activities.return_value = activities_mock
 
         workspace.create('My Workspace', event_callback='\\')
         workspaces_mock.create.assert_called_with(event_callback_url='\\',
