@@ -138,9 +138,9 @@ uses a PostgreSQL database to log phone calls which were not assisted.
 
 1. Reply with 1.
 1. The specified phone for agent 1 will be called:  __agent1-phone__.
-1. If __agent1-phone__ is not attended in 30 seconds then __agent2-phone__ will
+1. If __agent1-phone__ is not answered in 30 seconds then __agent2-phone__ will
    be called.
-1. In case the second agent doesn't attend the call, it will be logged as a
+1. In case the second agent doesn't answer the call, it will be logged as a
    missed call. You can see all missed calls in the main page of the running
    server at [http://{sub-domain}.ngrok.io](//localhost:8000).
 1. Repeat the process but enter any key different to __1__ to choose Voice.
