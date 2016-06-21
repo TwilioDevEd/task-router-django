@@ -90,7 +90,7 @@ WorkflowSid on the verb.</p>
 <li><a href="//www.twilio.com/docs/api/twiml/enqueue">TwiML Voice: &lt;Enqueue&gt; verb</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">TaskRouter: Using &lt;Enqueue&gt; to route calls with TaskRouter</a></li>
 </ul>
-</div><div data-title="Assigning a worker" data-file="task_router/views.py" data-highlight="44-49" class="step"><h2 id="assigning-a-worker">Assigning a worker</h2>
+</div><div data-title="Assigning a Worker" data-file="task_router/views.py" data-highlight="44-49" class="step"><h2 id="assigning-a-worker">Assigning a Worker</h2>
 <p>When TaskRouter selects a Worker to handle a Task it makes an HTTP
 request to this endpoint, which was configured using the
 <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command. Handling this
@@ -107,7 +107,7 @@ the call ends.</p>
 <li><a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">Assigning Tasks to Workers: Dequeue a call from a TwiML queue</a></li>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">TaskRouter Quickstart: Understanding Activities</a></li>
 </ul>
-</div><div data-title="Collecting missed calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting missed calls</h2>
+</div><div data-title="Collecting Missed Calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting Missed Calls</h2>
 <p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
 is triggered. In our application, we are trying to collect missed calls, so
 it&#39;s interesting to handle the <code>workflow.timeout</code> event. This event is triggered when
@@ -126,7 +126,7 @@ information from the customers that hang up before the Workflow times out.</p>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events">TaskRouter: Events</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter: Event types</a></li>
 </ul>
-</div><div class="step"><h2 id="where-to-next-">Where to next?</h2>
+</div><div class="step"><h2 id="where-to-next-">Where to Next?</h2>
 <p>That&#39;s it!</p>
 <p>If you&#39;re a Python developer working with
 Twilio, you might enjoy these other tutorials:</p>
