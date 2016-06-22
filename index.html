@@ -31,8 +31,8 @@ an agent can call them back later on.</p>
 </ul>
 </div><div data-title="Configuring the Workspace" data-file="task_router/workspace.py" data-highlight="14-17,45-101" class="step"><h2 id="configuring-the-workspace">Configuring the Workspace</h2>
 <p>In order to instruct TaskRouter to handle the Tasks, we need to
-configure a Workspace. This is possible either using the <a href="//www.twilio.com/user/account/taskrouter/workspaces">TaskRouter
-Dashboard</a> or
+configure a Workspace. This is possible either using the <a href="//www.twilio.com/console/taskrouter/workspaces">TaskRouter
+Console</a> or
 programmatically through <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
 <p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter
 application. The elements are:</p>
@@ -56,7 +56,7 @@ and each one of them receives calls for a specific product.</p>
 </ul>
 </div><div data-title="Handling Twilio's Request" data-file="task_router/views.py" data-highlight="24-30" class="step"><h2 id="handling-twilio-s-request">Handling Twilio&#39;s Request</h2>
 <p>Right after receiving a call, Twilio will send a request to the
-URL specified on the <a href="//www.twilio.com/user/account/phone-numbers/incoming">number&#39;s configuration</a>.</p>
+URL specified on the <a href="//www.twilio.com/console/phone-numbers/incoming">number&#39;s configuration</a>.</p>
 <p>The endpoint will then process the request and generate a TwiML response.
 We&#39;ll use the Say verb to give the user product alternatives, and a key
 they can press in order to select one. The Gather verb allows us to

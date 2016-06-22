@@ -29,7 +29,7 @@
 
       In order to instruct TaskRouter to handle the Tasks, we need to
       configure a Workspace. This is possible either using the [TaskRouter
-      Dashboard](//www.twilio.com/user/account/taskrouter/workspaces) or
+      Console](//www.twilio.com/console/taskrouter/workspaces) or
       programmatically through [TaskRouter REST API][api-main].
 
       A [Workspace][workspaces-doc] is the container element for any TaskRouter
@@ -68,7 +68,7 @@
       ## Handling Twilio's Request
 
       Right after receiving a call, Twilio will send a request to the
-      URL specified on the [number's configuration](//www.twilio.com/user/account/phone-numbers/incoming).
+      URL specified on the [number's configuration](//www.twilio.com/console/phone-numbers/incoming).
 
       The endpoint will then process the request and generate a TwiML response.
       We'll use the Say verb to give the user product alternatives, and a key
