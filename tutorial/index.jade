@@ -143,11 +143,12 @@
       ## Collecting Missed Calls
 
       This endpoint will be called after each [TaskRouter Event][event-types]
-      is triggered. In our application, we are trying to collect missed calls, so
-      it's interesting to handle the `workflow.timeout` event. This event is triggered when
-      the Task waits more than the limit set on Workflow Configuration, which
-      happens when no available worker is found after trying out all possible
-      Task Queues configured as rules for this Workflow.
+      is triggered. In our application, we are trying to collect missed calls,
+      so we would like to handle the `workflow.timeout` event. This event is
+      triggered when the Task waits more than the limit set on Workflow
+      Configuration, which happens when no available worker is found after
+      trying out all possible Task Queues configured as rules for this
+      Workflow.
 
       Here we hang up and store the call information in the database to be able to call this user
       later.

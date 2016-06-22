@@ -109,11 +109,12 @@ the call ends.</p>
 </ul>
 </div><div data-title="Collecting Missed Calls" data-file="task_router/views.py" data-highlight="52-70" class="step"><h2 id="collecting-missed-calls">Collecting Missed Calls</h2>
 <p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
-is triggered. In our application, we are trying to collect missed calls, so
-it&#39;s interesting to handle the <code>workflow.timeout</code> event. This event is triggered when
-the Task waits more than the limit set on Workflow Configuration, which
-happens when no available worker is found after trying out all possible
-Task Queues configured as rules for this Workflow.</p>
+is triggered. In our application, we are trying to collect missed calls,
+so we would like to handle the <code>workflow.timeout</code> event. This event is
+triggered when the Task waits more than the limit set on Workflow
+Configuration, which happens when no available worker is found after
+trying out all possible Task Queues configured as rules for this
+Workflow.</p>
 <p>Here we hang up and store the call information in the database to be able to call this user
 later.</p>
 <p>Note that we are also listening for <code>task.canceled</code>. This is triggered
