@@ -35,11 +35,7 @@ def create(name, event_callback):
                 friendly_name=name,
                 event_callback_url=event_callback,
                 template=None)
-    workspace = Workspace(workspace)
-    client.workspaces.update(
-            workspace.sid,
-            timeout_activity_sid=workspace.get_activity_by_name('Idle').sid)
-    return workspace
+    return Workspace(workspace)
 
 
 class Workspace():
