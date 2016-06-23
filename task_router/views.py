@@ -15,7 +15,7 @@ AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 
 def root(request):
     """ Renders a missed calls list, with product and phone number """
-    missed_calls = MissedCall.objects.order_by('created')
+    missed_calls = MissedCall.objects.order_by('-created')
     return render(request, 'index.html', {
         'missed_calls': missed_calls
     })
