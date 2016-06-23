@@ -78,10 +78,12 @@ A <code>Task</code> will be created based on the pressed digit with the
 <code>selected_product</code> as an attribute. The Workflow will take this Task&#39;s
 attributes and match with the <a href="https://www.twilio.com/docs/api/taskrouter/expression-syntax">configured
 expressions</a>
-in order to find an appropriate available Worker.</p>
-<p>We use the <a href="//www.twilio.com/docs/api/twiml/enqueue"><code>Enqueue</code> verb</a> to <a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">integrate with
-TaskRouter</a>. We just need to specify a
-WorkflowSid on the verb.</p>
+in order to find a Task Queue for this Task, so an appropriate available
+Worker can be assigned to handle it.</p>
+<p>We use the <a href="//www.twilio.com/docs/api/twiml/enqueue"><code>Enqueue</code> verb</a> with a <code>WorkflowSid</code> attribute
+to <a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">integrate with TaskRouter</a>. Then the voice call will
+be put on hold while TaskRouter tries to find an available Worker to
+handle this Task.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -91,15 +93,27 @@ WorkflowSid on the verb.</p>
 <li><a href="//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter">TaskRouter: Using &lt;Enqueue&gt; to route calls with TaskRouter</a></li>
 </ul>
 </div><div data-title="Assigning a Worker" data-file="task_router/views.py" data-highlight="44-49" class="step"><h2 id="assigning-a-worker">Assigning a Worker</h2>
-<p>When TaskRouter selects a Worker to handle a Task it makes an HTTP
-request to this endpoint, which was configured using the
-<a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command. Handling this
-<a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks">Assignment Callback</a> is a key component of building a TaskRouter
-application.</p>
-<p>Here, we will <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call that was
-enqueued on the previous step. We also send a <code>post_work_activity_sid</code>
-which will tell TaskRouter which <a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">Activity</a> to assign this worker after
-the call ends.</p>
+<p>When TaskRouter selects a Worker, it does the following:</p>
+<ol>
+<li>The Task&#39;s Assignment Status is set to &#39;reserved&#39;.</li>
+<li>A <a href="//www.twilio.com/docs/api/taskrouter/reservations">Reservation instance</a> is generated,
+linking the Task to the selected Worker.</li>
+<li>At the same time the Reservation is created, a webhook POST request is
+made to the Workflow&#39;s AssignmentCallbackURL, which was configured using
+the <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command.
+This request includes the full details of the Task, the selected Worker,
+and the Reservation.</li>
+</ol>
+<p>Handling this <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks">Assignment Callback</a> is a key
+component of building a TaskRouter application as we can instruct how the
+Worker will handle a Task. We could send a text, e-mail, push
+notifications or deliver a call.</p>
+<p>Since we created this Task during a voice call with an <code>Enqueue</code> verb,
+let&#39;s <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call and dial
+a Worker. If we do not specify a <code>to</code> parameter with a
+phone number, TaskRouter will pick the Worker&#39;s <code>contact_uri</code> attribute.</p>
+<p>We also send a <code>post_work_activity_sid</code> which will tell TaskRouter which
+<a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">Activity</a> to assign this worker after the call ends.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>

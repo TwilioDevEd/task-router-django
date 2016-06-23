@@ -95,11 +95,13 @@
       `selected_product` as an attribute. The Workflow will take this Task's
       attributes and match with the [configured
       expressions](https://www.twilio.com/docs/api/taskrouter/expression-syntax)
-      in order to find an appropriate available Worker.
+      in order to find a Task Queue for this Task, so an appropriate available
+      Worker can be assigned to handle it.
 
-      We use the [`Enqueue` verb][enqueue-verb] to [integrate with
-      TaskRouter][integration-doc]. We just need to specify a
-      WorkflowSid on the verb.
+      We use the [`Enqueue` verb][enqueue-verb] with a `WorkflowSid` attribute
+      to [integrate with TaskRouter][integration-doc]. Then the voice call will
+      be put on hold while TaskRouter tries to find an available Worker to
+      handle this Task.
 
       ---
       **See Also:**
@@ -115,16 +117,29 @@
     :markdown
       ## Assigning a Worker
 
-      When TaskRouter selects a Worker to handle a Task it makes an HTTP
-      request to this endpoint, which was configured using the
-      [`configure_workspace`][workspace-command-github] Django command. Handling this
-      [Assignment Callback][assignment-callback] is a key component of building a TaskRouter
-      application.
+      When TaskRouter selects a Worker, it does the following:
 
-      Here, we will [instruct TaskRouter to dequeue][dequeue-section] the call that was
-      enqueued on the previous step. We also send a `post_work_activity_sid`
-      which will tell TaskRouter which [Activity][activities] to assign this worker after
-      the call ends.
+      1. The Task's Assignment Status is set to 'reserved'.
+      2. A [Reservation instance][reservation-instance-doc] is generated,
+      linking the Task to the selected Worker.
+      3. At the same time the Reservation is created, a webhook POST request is
+      made to the Workflow's AssignmentCallbackURL, which was configured using
+      the [`configure_workspace`][workspace-command-github] Django command.
+      This request includes the full details of the Task, the selected Worker,
+      and the Reservation.
+
+      Handling this [Assignment Callback][assignment-callback] is a key
+      component of building a TaskRouter application as we can instruct how the
+      Worker will handle a Task. We could send a text, e-mail, push
+      notifications or deliver a call.
+
+      Since we created this Task during a voice call with an `Enqueue` verb,
+      let's [instruct TaskRouter to dequeue][dequeue-section] the call and dial
+      a Worker. If we do not specify a `to` parameter with a
+      phone number, TaskRouter will pick the Worker's `contact_uri` attribute.
+
+      We also send a `post_work_activity_sid` which will tell TaskRouter which
+      [Activity][activities] to assign this worker after the call ends.
 
       ---
       **See Also:**
@@ -132,6 +147,7 @@
       * [Assigning Tasks to Workers: Dequeue a call from a TwiML queue][dequeue-section]
       * [TaskRouter Quickstart: Understanding Activities](//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities)
 
+      [reservation-instance-doc]: //www.twilio.com/docs/api/taskrouter/reservations
       [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
       [assignment-callback]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks
       [dequeue-section]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call
