@@ -23,7 +23,7 @@
       * [Getting Started with Twilio TaskRouter](//www.twilio.com/docs/quickstart/python/taskrouter)
 
   .step(data-title='Configuring the Workspace', data-file='task_router/workspace.py',
-    data-highlight='14-17,45-101')
+    data-highlight='14-17,30-42,45-101')
     :markdown
       ## Configuring the Workspace
 
@@ -39,19 +39,20 @@
       * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
       * [Workflows][workflows-doc] - Responsible for matching Tasks into Task Queues
       * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
-
-      This application uses the `configure_workspace` [Django
-      Command][django-commands], [check it out here][workspace-command-github].
-      For our example application we have created two workers (Bob and Alice)
-      and each one of them receives calls for a specific product.
+      
+      In order to build a client for this API, we need a `TWILIO_ACCOUNT_SID`
+      and `TWILIO_AUTH_TOKEN` which you can find on [Twilio
+      Console](//www.twilio.com/console). The function `build_client`
+      configures and returns a TwilioTaskRouterClient, which is provided by the
+      [Twilio Python library][python-api-doc]. The `create` function uses this
+      client to retrieve/create a new Workspace and returns a `Workspace` class
+      wrapping API calls to populate a Workspace.
 
       ---
       **See Also:**
-      * [Django Management Commands][django-commands]
       * [TaskRouter: REST API Reference][api-main]
       * [TaskRouter: Python API Documentation][python-api-doc]
 
-      [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
       [python-api-doc]: http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html
       [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
       [api-main]: https://www.twilio.com/docs/api/taskrouter/rest-api
@@ -61,6 +62,71 @@
       [tasks-doc]: https://www.twilio.com/docs/api/taskrouter/tasks
       [workers-doc]: https://www.twilio.com/docs/api/taskrouter/workers
       [activities-doc]: https://www.twilio.com/docs/api/taskrouter/activities
+
+  .step(data-title='The Create Workspace Command', data-file='task_router/management/commands/create_workspace.py',
+    data-highlight='6-55')
+    :markdown
+      ## The Create Workspace Command
+
+      This application uses the `configure_workspace` [Django
+      Command][django-commands] to orchestrate calls to our `workspace` module
+      in order to configure a Workspace, following data provided by
+      `workspace.json` combined with user parameters.
+
+      Our command arguments are:
+      1. `host` - A public URL which Twilio can send requests. This can be
+      either a cloud service or [ngrok][ngrok-url], which can expose a local
+      application to the internet.
+      2. `bob_number` - The telephone number of Bob, the Programmable SMS specialist.
+      2. `alice_number` - Same for Alice, the Programmable Voice specialist.
+      
+      First, we parse the JSON file and store in `workspace_json` variable.
+      `workspace_parser` is a simple module to locate and parse our JSON file.
+      After parsing, we call `workspace.delete` to delete the previous
+      Workspace, if it was already created, and `workspace.create` to start a
+      new one, using the class defined on previous step.
+
+      Using the JSON and provided parameters, we create Bob and Alice
+      Workers with two attributes on each Worker: `contact_uri` with a phone number
+      and `products` with a list of the products which each worker is
+      specialized.
+
+      Next, we set up the Task Queues using `workspace.add_queue`, each with a
+      `name` and a `targetWorkers`, which is an expression to match Workers.
+      Our Task Queues are:
+      1. `SMS`, which will target Workers specialized in Programmable SMS, such
+      as Bob, using the expression `"products HAS \"ProgrammableSMS\""`.
+      2. `Voice`, which will do the same for Programmable Voice Workers, such
+      as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
+      3. `Default` - This queue targets all users and can be used when there is
+      no specialist around for the choosen product. We can use `"1==1"`
+      expression here.
+
+      Finally, we set up the Workflow with `workspace.add_workflow` using the
+      following parameters:
+      1. `name` as the name of a Workflow
+      2. `callback` as the public URL that will be requested when this Workflow
+      assigns a Task to a Worker. We will learn how to implement it on next steps.
+      3. `timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
+      4. `routingConfiguration`, which is a set of rules for matching Tasks into Task Queues.
+
+      The routing configuration will take a Task attributes and match into Task
+      Queues. This application Worflow's rules is defined as:
+      1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
+      Queue. This expression will match any Task with `ProgrammableSMS` as
+      `selected_product` attibute.
+      2. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
+      Task Queue. It does the same for Taks with
+      `selected_product=ProgrammableVoice`.
+
+      ---
+      **See Also:**
+      * [Django Management Commands][django-commands]
+      * [TaskRouter Python Quickstart Overview](//www.twilio.com/docs/quickstart/python/taskrouter)
+
+      [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
+
+
 
   .step(data-title="Handling Twilio's Request", data-file='task_router/views.py',
     data-highlight='24-30')
