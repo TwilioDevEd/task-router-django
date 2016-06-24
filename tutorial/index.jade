@@ -220,7 +220,7 @@
       [activities]: //www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities
 
   .step(data-title='Collecting Missed Calls', data-file='task_router/views.py',
-    data-highlight='60-80')
+    data-highlight='21, 60-80')
     :markdown
       ## Collecting Missed Calls
 
@@ -232,8 +232,12 @@
       trying out all possible Task Queues configured as rules for this
       Workflow.
 
-      Here we hang up and store the call information in the database to be able to call this user
-      later.
+      Here we use TwilioRestClient to route this call into a [Voicemail
+      Twimlet][voicemail-twimlet]. Twimlets are tiny web applications for
+      voice.  This one will generate a `TwiML` response using `Say` verb and
+      record a message using `Record` verb. After recorded, the message will be
+      transcribed and sent to the mail address we configured on
+      `MISSED_CALLS_EMAIL_ADDRESS` environment variable.
 
       Note that we are also listening for `task.canceled`. This is triggered
       when the customer hangs up before being assigned to an agent, therefore
@@ -244,8 +248,11 @@
       **See Also:**
       * [TaskRouter: Events](//www.twilio.com/docs/api/taskrouter/events)
       * [TaskRouter: Event types][event-types]
+      * [Twilio Twimlets][twimlets]
 
       [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
+      [twimlets]: https://www.twilio.com/labs/twimlets
+      [voicemail-twimlet]: https://www.twilio.com/labs/twimlets/voicemail
   .step
     :markdown
       ## Where to Next?

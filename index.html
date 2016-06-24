@@ -182,7 +182,7 @@ phone number, TaskRouter will pick the Worker&#39;s <code>contact_uri</code> att
 <li><a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">Assigning Tasks to Workers: Dequeue a call from a TwiML queue</a></li>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities">TaskRouter Quickstart: Understanding Activities</a></li>
 </ul>
-</div><div data-title="Collecting Missed Calls" data-file="task_router/views.py" data-highlight="60-80" class="step"><h2 id="collecting-missed-calls">Collecting Missed Calls</h2>
+</div><div data-title="Collecting Missed Calls" data-file="task_router/views.py" data-highlight="21, 60-80" class="step"><h2 id="collecting-missed-calls">Collecting Missed Calls</h2>
 <p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
 is triggered. In our application, we are trying to collect missed calls,
 so we would like to handle the <code>workflow.timeout</code> event. This event is
@@ -190,8 +190,12 @@ triggered when the Task waits more than the limit set on Workflow
 Configuration, which happens when no available worker is found after
 trying out all possible Task Queues configured as rules for this
 Workflow.</p>
-<p>Here we hang up and store the call information in the database to be able to call this user
-later.</p>
+<p>Here we use TwilioRestClient to route this call into a <a href="https://www.twilio.com/labs/twimlets/voicemail">Voicemail
+Twimlet</a>. Twimlets are tiny web applications for
+voice.  This one will generate a <code>TwiML</code> response using <code>Say</code> verb and
+record a message using <code>Record</code> verb. After recorded, the message will be
+transcribed and sent to the mail address we configured on
+<code>MISSED_CALLS_EMAIL_ADDRESS</code> environment variable.</p>
 <p>Note that we are also listening for <code>task.canceled</code>. This is triggered
 when the customer hangs up before being assigned to an agent, therefore
 cancelling the task. Capturing this event allows us to collect the
@@ -201,6 +205,7 @@ information from the customers that hang up before the Workflow times out.</p>
 <ul>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events">TaskRouter: Events</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter: Event types</a></li>
+<li><a href="https://www.twilio.com/labs/twimlets">Twilio Twimlets</a></li>
 </ul>
 </div><div class="step"><h2 id="where-to-next-">Where to Next?</h2>
 <p>That&#39;s it!</p>
