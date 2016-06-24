@@ -33,31 +33,31 @@ an agent can call them back later on.</p>
 <p>In order to instruct TaskRouter to handle the Tasks, we need to
 configure a Workspace. This is possible either using the <a href="//www.twilio.com/console/taskrouter/workspaces">TaskRouter
 Console</a> or
-programmatically through <a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
-<p>A <a href="https://www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter
+programmatically through <a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</p>
+<p>A <a href="//www.twilio.com/docs/api/taskrouter/workspaces">Workspace</a> is the container element for any TaskRouter
 application. The elements are:</p>
 <ul>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/tasks">Tasks</a> - Represents a customer trying to contact an agent</li>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/workers">Workers</a> - The agents responsible for handling Tasks</li>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/taskqueues">Task Queues</a> - Holds Tasks to be consumed by a set of Workers</li>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/workflows">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/activities">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/tasks">Tasks</a> - Represents a customer trying to contact an agent</li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/workers">Workers</a> - The agents responsible for handling Tasks</li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/taskqueues">Task Queues</a> - Holds Tasks to be consumed by a set of Workers</li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/workflows">Workflows</a> - Responsible for matching Tasks into Task Queues</li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/activities">Activities</a> - Possible states of a Worker. Eg: idle, offline, busy</li>
 </ul>
 <p>In order to build a client for this API, we need a <code>TWILIO_ACCOUNT_SID</code>
 and <code>TWILIO_AUTH_TOKEN</code> which you can find on <a href="//www.twilio.com/console">Twilio
 Console</a>. The function <code>build_client</code>
 configures and returns a TwilioTaskRouterClient, which is provided by the
-<a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">Twilio Python library</a>. The <code>create</code> function uses this
+<a href="//twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">Twilio Python library</a>. The <code>create</code> function uses this
 client to retrieve/create a new Workspace and returns a <code>Workspace</code> class
 wrapping API calls to populate a Workspace.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
-<li><a href="https://www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter: REST API Reference</a></li>
-<li><a href="http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">TaskRouter: Python API Documentation</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter: REST API Reference</a></li>
+<li><a href="//twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">TaskRouter: Python API Documentation</a></li>
 </ul>
 </div><div data-title="The Create Workspace Command" data-file="task_router/management/commands/create_workspace.py" data-highlight="6-55" class="step"><h2 id="the-create-workspace-command">The Create Workspace Command</h2>
-<p>This application uses the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
+<p>This application uses the <code>configure_workspace</code> <a href="//docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
 Command</a> to orchestrate calls to our <code>workspace</code> module
 in order to configure a Workspace. The command uses data provided by
 <code>workspace.json</code> and the following arguments:</p>
@@ -139,7 +139,7 @@ a key during the call.
 This request has a <code>Digits</code> parameter that holds the pressed keys.
 A <code>Task</code> will be created based on the pressed digit with the
 <code>selected_product</code> as an attribute. The Workflow will take this Task&#39;s
-attributes and match with the <a href="https://www.twilio.com/docs/api/taskrouter/expression-syntax">configured
+attributes and match with the <a href="//www.twilio.com/docs/api/taskrouter/expression-syntax">configured
 expressions</a>
 in order to find a Task Queue for this Task, so an appropriate available
 Worker can be assigned to handle it.</p>
@@ -163,7 +163,7 @@ handle this Task.</p>
 linking the Task to the selected Worker.</li>
 <li>At the same time the Reservation is created, a POST request is
 made to the Workflow&#39;s AssignmentCallbackURL, which was configured using
-the <a href="https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command.
+the <a href="//github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command.
 This request includes the full details of the Task, the selected Worker,
 and the Reservation.</li>
 </ol>
@@ -192,7 +192,7 @@ triggered when the Task waits more than the limit set on Workflow
 Configuration, which happens when no available worker is found after
 trying out all possible Task Queues configured as rules for this
 Workflow.</p>
-<p>Here we use TwilioRestClient to route this call into a <a href="https://www.twilio.com/labs/twimlets/voicemail">Voicemail
+<p>Here we use TwilioRestClient to route this call into a <a href="//www.twilio.com/labs/twimlets/voicemail">Voicemail
 Twimlet</a>. Twimlets are tiny web applications for
 voice.  This one will generate a <code>TwiML</code> response using <code>Say</code> verb and
 record a message using <code>Record</code> verb. After recorded, the message will be
@@ -207,7 +207,7 @@ information from the customers that hang up before the Workflow times out.</p>
 <ul>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events">TaskRouter: Events</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter: Event types</a></li>
-<li><a href="https://www.twilio.com/labs/twimlets">Twilio Twimlets</a></li>
+<li><a href="//www.twilio.com/labs/twimlets">Twilio Twimlets</a></li>
 </ul>
 </div><div class="step"><h2 id="where-to-next-">Where to Next?</h2>
 <p>That&#39;s it!</p>
