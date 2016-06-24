@@ -59,69 +59,83 @@ wrapping API calls to populate a Workspace.</p>
 </div><div data-title="The Create Workspace Command" data-file="task_router/management/commands/create_workspace.py" data-highlight="6-55" class="step"><h2 id="the-create-workspace-command">The Create Workspace Command</h2>
 <p>This application uses the <code>configure_workspace</code> <a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
 Command</a> to orchestrate calls to our <code>workspace</code> module
-in order to configure a Workspace, following data provided by
-<code>workspace.json</code> combined with user parameters.</p>
-<p>Our command arguments are:</p>
+in order to configure a Workspace. The command uses data provided by
+<code>workspace.json</code> and the following arguments:</p>
 <ol>
-<li><code>host</code> - A public URL which Twilio can send requests. This can be
+<li><p><code>host</code> - A public URL which Twilio can send requests. This can be
 either a cloud service or [ngrok][ngrok-url], which can expose a local
-application to the internet.</li>
-<li><code>bob_number</code> - The telephone number of Bob, the Programmable SMS specialist.</li>
-<li><code>alice_number</code> - Same for Alice, the Programmable Voice specialist.</li>
+application to the internet.</p>
+</li>
+<li><p><code>bob_number</code> - The telephone number of Bob, the Programmable SMS specialist.</p>
+</li>
+<li><p><code>alice_number</code> - Same for Alice, the Programmable Voice specialist.</p>
+</li>
 </ol>
 <p>First, we parse the JSON file and store in <code>workspace_json</code> variable.
-<code>workspace_parser</code> is a simple module to locate and parse our JSON file.
-After parsing, we call <code>workspace.delete</code> to delete the previous
-Workspace, if it was already created, and <code>workspace.create</code> to start a
-new one, using the class defined on previous step.</p>
-<p>Using the JSON and provided parameters, we create Bob and Alice
-Workers with two attributes on each Worker: <code>contact_uri</code> with a phone number
-and <code>products</code> with a list of the products which each worker is
-specialized.</p>
-<p>Next, we set up the Task Queues using <code>workspace.add_queue</code>, each with a
-<code>name</code> and a <code>targetWorkers</code>, which is an expression to match Workers.
-Our Task Queues are:</p>
-<ol>
-<li><code>SMS</code>, which will target Workers specialized in Programmable SMS, such
-as Bob, using the expression <code>&quot;products HAS \&quot;ProgrammableSMS\&quot;&quot;</code>.</li>
-<li><code>Voice</code>, which will do the same for Programmable Voice Workers, such
-as Alice, using the expression <code>&quot;products HAS \&quot;ProgrammableVoice\&quot;&quot;</code>.</li>
-<li><code>Default</code> - This queue targets all users and can be used when there is
-no specialist around for the choosen product. We can use <code>&quot;1==1&quot;</code>
-expression here.</li>
-</ol>
-<p>Finally, we set up the Workflow with <code>workspace.add_workflow</code> using the
-following parameters:</p>
-<ol>
-<li><code>name</code> as the name of a Workflow</li>
-<li><code>callback</code> as the public URL that will be requested when this Workflow
-assigns a Task to a Worker. We will learn how to implement it on next steps.</li>
-<li><code>timeout</code> as the maximum time we want to wait until a Worker is available for handling a Task.</li>
-<li><code>routingConfiguration</code>, which is a set of rules for matching Tasks into Task Queues.</li>
-</ol>
-<p>The routing configuration will take a Task attributes and match into Task
-Queues. This application Worflow&#39;s rules is defined as:</p>
-<ol>
-<li><code>&quot;selected_product==\&quot;ProgrammableSMS\&quot;&quot;</code> expression for <code>SMS</code> Task
-Queue. This expression will match any Task with <code>ProgrammableSMS</code> as
-<code>selected_product</code> attibute.</li>
-<li><code>&quot;selected_product==\&quot;ProgrammableVoice\&quot;&quot;</code> expression for <code>Voice</code>
-Task Queue. It does the same for Taks with
-<code>selected_product=ProgrammableVoice</code>.</li>
-</ol>
+<code>workspace_parser</code> is a simple module to locate and parse our JSON file.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
 <li><a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django Management Commands</a></li>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter">TaskRouter Python Quickstart Overview</a></li>
 </ul>
+</div><div data-title="Creating a Workspace" data-file="task_router/workspace.py" data-highlight="25-38" class="step"><h1 id="creating-a-workspace">Creating a Workspace</h1>
+<p>After parsing, we call <code>workspace.delete</code> to delete the previous
+Workspace, if it was already created, and <code>workspace.create</code> to create a
+new one.</p>
+</div><div data-title="Creating the Workers" data-file="task_router/workspace.py" data-highlight="47-52" class="step"><h1 id="creating-the-workers">Creating the Workers</h1>
+<p>Using the JSON and provided parameters, we create the workers Bob and Alice.
+They each hold two attributes: <code>contact_uri</code> with a phone number
+and <code>products</code> with a list of the products which each worker is
+specialized in.</p>
+</div><div data-title="Creating the Task Queues" data-file="task_router/workspace.py" data-highlight="54-63" class="step"><h1 id="creating-the-task-queues">Creating the Task Queues</h1>
+<p>Next, we set up the Task Queues using <code>workspace.add_queue</code>, each with a
+<code>name</code> and a <code>targetWorkers</code>, which is an expression to match Workers.
+Our Task Queues are:</p>
+<ol>
+<li><p><code>SMS</code> - Will target Workers specialized in Programmable SMS, such
+as Bob, using the expression <code>&quot;products HAS \&quot;ProgrammableSMS\&quot;&quot;</code>.</p>
+</li>
+<li><p><code>Voice</code> - Will do the same for Programmable Voice Workers, such
+as Alice, using the expression <code>&quot;products HAS \&quot;ProgrammableVoice\&quot;&quot;</code>.</p>
+</li>
+<li><p><code>Default</code> - This queue targets all users and can be used when there are
+no specialist around for the chosen product. We can use the <code>&quot;1==1&quot;</code>
+expression here.</p>
+</li>
+</ol>
+</div><div data-title="Creating a Workflow" data-file="task_router/workspace.py" data-highlight="65-97" class="step"><h1 id="creating-a-workflow">Creating a Workflow</h1>
+<p>Finally, we set up the Workflow with <code>workspace.add_workflow</code> using the
+following parameters:</p>
+<ol>
+<li><p><code>name</code> as the name of a Workflow</p>
+</li>
+<li><p><code>callback</code> as the public URL where a request will be made when this Workflow
+assigns a Task to a Worker. We will learn how to implement it on the next steps.</p>
+</li>
+<li><p><code>timeout</code> as the maximum time we want to wait until a Worker is available for handling a Task.</p>
+</li>
+<li><p><code>routingConfiguration</code>, which is a set of rules for matching Tasks into Task Queues.</p>
+</li>
+</ol>
+<p>The routing configuration will take a Task attributes and match with Task
+Queues. This application&#39;s Workflow rules are defined as:</p>
+<ol>
+<li><p><code>&quot;selected_product==\&quot;ProgrammableSMS\&quot;&quot;</code> expression for <code>SMS</code> Task
+Queue. This expression will match any Task with <code>ProgrammableSMS</code> as
+the <code>selected_product</code> attribute.</p>
+</li>
+<li><p><code>&quot;selected_product==\&quot;ProgrammableVoice\&quot;&quot;</code> expression for <code>Voice</code>
+Task Queue.</p>
+</li>
+</ol>
 </div><div data-title="Handling Twilio's Request" data-file="task_router/views.py" data-highlight="32-38" class="step"><h2 id="handling-twilio-s-request">Handling Twilio&#39;s Request</h2>
 <p>Right after receiving a call, Twilio will send a request to the
 URL specified on the <a href="//www.twilio.com/console/phone-numbers/incoming">number&#39;s configuration</a>.</p>
 <p>The endpoint will then process the request and generate a TwiML response.
 We&#39;ll use the Say verb to give the user product alternatives, and a key
 they can press in order to select one. The Gather verb allows us to
-capture the user&#39;s keypress.</p>
+capture the user&#39;s key press.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -198,7 +212,7 @@ transcribed and sent to the mail address we configured on
 <code>MISSED_CALLS_EMAIL_ADDRESS</code> environment variable.</p>
 <p>Note that we are also listening for <code>task.canceled</code>. This is triggered
 when the customer hangs up before being assigned to an agent, therefore
-cancelling the task. Capturing this event allows us to collect the
+canceling the task. Capturing this event allows us to collect the
 information from the customers that hang up before the Workflow times out.</p>
 <hr>
 <p><strong>See Also:</strong></p>
