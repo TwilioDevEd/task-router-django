@@ -99,7 +99,7 @@
       2. `Voice`, which will do the same for Programmable Voice Workers, such
       as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
       3. `Default` - This queue targets all users and can be used when there is
-      no specialist around for the choosen product. We can use `"1==1"`
+      no specialist around for the chosen product. We can use `"1==1"`
       expression here.
 
       Finally, we set up the Workflow with `workspace.add_workflow` using the
@@ -111,12 +111,12 @@
       4. `routingConfiguration`, which is a set of rules for matching Tasks into Task Queues.
 
       The routing configuration will take a Task attributes and match into Task
-      Queues. This application Worflow's rules is defined as:
+      Queues. This application Workflow's rules is defined as:
       1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
       Queue. This expression will match any Task with `ProgrammableSMS` as
-      `selected_product` attibute.
+      `selected_product` attribute.
       2. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
-      Task Queue. It does the same for Taks with
+      Task Queue. It does the same for Task with
       `selected_product=ProgrammableVoice`.
 
       ---
@@ -139,7 +139,7 @@
       The endpoint will then process the request and generate a TwiML response.
       We'll use the Say verb to give the user product alternatives, and a key
       they can press in order to select one. The Gather verb allows us to
-      capture the user's keypress.
+      capture the user's key press.
 
       ---
       **See Also:**
@@ -241,7 +241,7 @@
 
       Note that we are also listening for `task.canceled`. This is triggered
       when the customer hangs up before being assigned to an agent, therefore
-      cancelling the task. Capturing this event allows us to collect the
+      canceling the task. Capturing this event allows us to collect the
       information from the customers that hang up before the Workflow times out.
 
       ---
