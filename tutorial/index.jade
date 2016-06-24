@@ -70,54 +70,17 @@
 
       This application uses the `configure_workspace` [Django
       Command][django-commands] to orchestrate calls to our `workspace` module
-      in order to configure a Workspace, following data provided by
-      `workspace.json` combined with user parameters.
+      in order to configure a Workspace. The command uses data provided by
+      `workspace.json` and the following arguments:
 
-      Our command arguments are:
       1. `host` - A public URL which Twilio can send requests. This can be
-      either a cloud service or [ngrok][ngrok-url], which can expose a local
-      application to the internet.
-      2. `bob_number` - The telephone number of Bob, the Programmable SMS specialist.
-      2. `alice_number` - Same for Alice, the Programmable Voice specialist.
+         either a cloud service or [ngrok][ngrok-url], which can expose a local
+         application to the internet.
+      1. `bob_number` - The telephone number of Bob, the Programmable SMS specialist.
+      1. `alice_number` - Same for Alice, the Programmable Voice specialist.
       
       First, we parse the JSON file and store in `workspace_json` variable.
       `workspace_parser` is a simple module to locate and parse our JSON file.
-      After parsing, we call `workspace.delete` to delete the previous
-      Workspace, if it was already created, and `workspace.create` to start a
-      new one, using the class defined on previous step.
-
-      Using the JSON and provided parameters, we create Bob and Alice
-      Workers with two attributes on each Worker: `contact_uri` with a phone number
-      and `products` with a list of the products which each worker is
-      specialized.
-
-      Next, we set up the Task Queues using `workspace.add_queue`, each with a
-      `name` and a `targetWorkers`, which is an expression to match Workers.
-      Our Task Queues are:
-      1. `SMS`, which will target Workers specialized in Programmable SMS, such
-      as Bob, using the expression `"products HAS \"ProgrammableSMS\""`.
-      2. `Voice`, which will do the same for Programmable Voice Workers, such
-      as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
-      3. `Default` - This queue targets all users and can be used when there is
-      no specialist around for the chosen product. We can use `"1==1"`
-      expression here.
-
-      Finally, we set up the Workflow with `workspace.add_workflow` using the
-      following parameters:
-      1. `name` as the name of a Workflow
-      2. `callback` as the public URL that will be requested when this Workflow
-      assigns a Task to a Worker. We will learn how to implement it on next steps.
-      3. `timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
-      4. `routingConfiguration`, which is a set of rules for matching Tasks into Task Queues.
-
-      The routing configuration will take a Task attributes and match into Task
-      Queues. This application Workflow's rules is defined as:
-      1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
-      Queue. This expression will match any Task with `ProgrammableSMS` as
-      `selected_product` attribute.
-      2. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
-      Task Queue. It does the same for Task with
-      `selected_product=ProgrammableVoice`.
 
       ---
       **See Also:**
@@ -126,7 +89,63 @@
 
       [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
 
+  .step(data-title='Creating a Workspace', data-file='task_router/workspace.py',
+    data-highlight='25-38')
+    :markdown
+      # Creating a Workspace
 
+      After parsing, we call `workspace.delete` to delete the previous
+      Workspace if it was already created, and `workspace.create` to create a
+      new one.
+
+  .step(data-title='Creating the Workers', data-file='task_router/workspace.py',
+    data-highlight='47-52')
+    :markdown
+      # Creating the Workers
+
+      Using the JSON and provided parameters, we create the workers Bob and Alice.
+      They each hold two attributes: `contact_uri` with a phone number
+      and `products` with a list of the products which each worker is
+      specialized in.
+
+  .step(data-title='Creating the Task Queues', data-file='task_router/workspace.py',
+    data-highlight='54-63')
+    :markdown
+      # Creating the Task Queues
+
+      Next, we set up the Task Queues using `workspace.add_queue`, each with a
+      `name` and a `targetWorkers`, which is an expression to match Workers.
+      Our Task Queues are:
+
+      1. `SMS` - Will target Workers specialized in Programmable SMS, such
+         as Bob, using the expression `"products HAS \"ProgrammableSMS\""`.
+      1. `Voice` - Will do the same for Programmable Voice Workers, such
+         as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
+      1. `Default` - This queue targets all users and can be used when there are
+         no specialist around for the chosen product. We can use the `"1==1"`
+         expression here.
+
+  .step(data-title='Creating a Workflow', data-file='task_router/workspace.py',
+    data-highlight='65-73,83-97')
+    :markdown
+      # Creating a Workflow
+
+      Finally, we set up the Workflow with `workspace.add_workflow` using the
+      following parameters:
+
+      1. `name` as the name of a Workflow.
+      1. `callback` as the public URL where a request will be made when this Workflow
+         assigns a Task to a Worker. We will learn how to implement it on the next steps.
+      1. `timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
+      1. `routingConfiguration` which is a set of rules for matching Tasks into Task Queues.
+      The routing configuration will take a Task attributes and match with Task
+      Queues. This application's Workflow rules are defined as:
+      1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
+         Queue. This expression will match any Task with `ProgrammableSMS` as
+         the `selected_product` attribute.
+
+      1. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
+         Task Queue.
 
   .step(data-title="Handling Twilio's Request", data-file='task_router/views.py',
     data-highlight='32-38')
@@ -186,9 +205,9 @@
       When TaskRouter selects a Worker, it does the following:
 
       1. The Task's Assignment Status is set to 'reserved'.
-      2. A [Reservation instance][reservation-instance-doc] is generated,
-      linking the Task to the selected Worker.
-      3. At the same time the Reservation is created, a webhook POST request is
+      1. A [Reservation instance][reservation-instance-doc] is generated,
+         linking the Task to the selected Worker.
+      1. At the same time the Reservation is created, a POST request is
       made to the Workflow's AssignmentCallbackURL, which was configured using
       the [`configure_workspace`][workspace-command-github] Django command.
       This request includes the full details of the Task, the selected Worker,
