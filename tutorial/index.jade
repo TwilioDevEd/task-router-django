@@ -92,7 +92,7 @@
   .step(data-title='Creating a Workspace', data-file='task_router/workspace.py',
     data-highlight='25-38')
     :markdown
-      # Creating a Workspace
+      ## Creating a Workspace
 
       After parsing, we call `workspace.delete` to delete the previous
       Workspace if it was already created, and `workspace.create` to create a
@@ -101,7 +101,7 @@
   .step(data-title='Creating the Workers', data-file='task_router/workspace.py',
     data-highlight='47-52')
     :markdown
-      # Creating the Workers
+      ## Creating the Workers
 
       Using the JSON and provided parameters, we create the workers Bob and Alice.
       They each hold two attributes: `contact_uri` with a phone number
@@ -111,7 +111,7 @@
   .step(data-title='Creating the Task Queues', data-file='task_router/workspace.py',
     data-highlight='54-63')
     :markdown
-      # Creating the Task Queues
+      ## Creating the Task Queues
 
       Next, we set up the Task Queues using `workspace.add_queue`, each with a
       `name` and a `targetWorkers`, which is an expression to match Workers.
@@ -128,7 +128,7 @@
   .step(data-title='Creating a Workflow', data-file='task_router/workspace.py',
     data-highlight='65-73,83-97')
     :markdown
-      # Creating a Workflow
+      ## Creating a Workflow
 
       Finally, we set up the Workflow with `workspace.add_workflow` using the
       following parameters:
