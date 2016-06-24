@@ -18,7 +18,7 @@ application will save the customer&#39;s number and selected product so
 an agent can call them back later on.</p>
 <p>This is what the application does at a high level:</p>
 <ol>
-<li>Configure a workspace using the Twilio REST API.</li>
+<li>Configure a workspace using the Twilio&#39;s <a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</li>
 <li>Listen for incoming calls and let the user select a product with the dial pad.</li>
 <li>Create a Task with the selected product and let TaskRouter handle it.</li>
 <li>Store missed calls so agents can return the call to customers.</li>
@@ -73,18 +73,28 @@ application to the internet.</li>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
-<li><a href="https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django Management Commands</a></li>
+<li><a href="//docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django Management Commands</a></li>
 <li><a href="//www.twilio.com/docs/quickstart/python/taskrouter">TaskRouter Python Quickstart Overview</a></li>
 </ul>
 </div><div data-title="Creating a Workspace" data-file="task_router/workspace.py" data-highlight="25-38" class="step"><h2 id="creating-a-workspace">Creating a Workspace</h2>
 <p>After parsing, we call <code>workspace.delete</code> to delete the previous
 Workspace if it was already created, and <code>workspace.create</code> to create a
 new one.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/taskrouter/workspaces">TaskRouter REST API: Workspace</a></li>
+</ul>
 </div><div data-title="Creating the Workers" data-file="task_router/workspace.py" data-highlight="47-52" class="step"><h2 id="creating-the-workers">Creating the Workers</h2>
 <p>Using the JSON and provided parameters, we create the workers Bob and Alice.
 They each hold two attributes: <code>contact_uri</code> with a phone number
 and <code>products</code> with a list of the products which each worker is
 specialized in.</p>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/taskrouter/workers">TaskRouter REST API: Workers</a></li>
+</ul>
 </div><div data-title="Creating the Task Queues" data-file="task_router/workspace.py" data-highlight="54-63" class="step"><h2 id="creating-the-task-queues">Creating the Task Queues</h2>
 <p>Next, we set up the Task Queues using <code>workspace.add_queue</code>, each with a
 <code>name</code> and a <code>targetWorkers</code>, which is an expression to match Workers.
@@ -98,6 +108,12 @@ as Alice, using the expression <code>&quot;products HAS \&quot;ProgrammableVoice
 no specialist around for the chosen product. We can use the <code>&quot;1==1&quot;</code>
 expression here.</li>
 </ol>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/taskrouter/taskqueues">TaskRouter REST API: Task Queues</a></li>
+<li><a href="//www.twilio.com/docs/api/taskrouter/taskqueues#target-workers">TargetWorkers&#39;s Expressions</a></li>
+</ul>
 </div><div data-title="Creating a Workflow" data-file="task_router/workspace.py" data-highlight="65-73,83-97" class="step"><h2 id="creating-a-workflow">Creating a Workflow</h2>
 <p>Finally, we set up the Workflow with <code>workspace.add_workflow</code> using the
 following parameters:</p>
@@ -117,6 +133,11 @@ the <code>selected_product</code> attribute.</p>
 Task Queue.</p>
 </li>
 </ol>
+<hr>
+<p><strong>See Also:</strong></p>
+<ul>
+<li><a href="//www.twilio.com/docs/api/taskrouter/workflows">TaskRouter REST API: Workflows</a></li>
+</ul>
 </div><div data-title="Handling Twilio's Request" data-file="task_router/views.py" data-highlight="32-38" class="step"><h2 id="handling-twilio-s-request">Handling Twilio&#39;s Request</h2>
 <p>Right after receiving a call, Twilio will send a request to the
 URL specified on the <a href="//www.twilio.com/console/phone-numbers/incoming">number&#39;s configuration</a>.</p>

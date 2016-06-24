@@ -12,7 +12,7 @@
 
       This is what the application does at a high level:
 
-      1. Configure a workspace using the Twilio REST API.
+      1. Configure a workspace using the Twilio's [TaskRouter REST API][api-main].
       1. Listen for incoming calls and let the user select a product with the dial pad.
       1. Create a Task with the selected product and let TaskRouter handle it.
       1. Store missed calls so agents can return the call to customers.
@@ -21,6 +21,8 @@
       **See Also:**
       * [Getting Started with Django](//www.djangoproject.com/start/)
       * [Getting Started with Twilio TaskRouter](//www.twilio.com/docs/quickstart/python/taskrouter)
+
+      [api-main]: //www.twilio.com/docs/api/taskrouter/rest-api
 
   .step(data-title='Configuring the Workspace', data-file='task_router/workspace.py',
     data-highlight='14-17,30-97')
@@ -98,6 +100,10 @@
       Workspace if it was already created, and `workspace.create` to create a
       new one.
 
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workspace](//www.twilio.com/docs/api/taskrouter/workspaces)
+
   .step(data-title='Creating the Workers', data-file='task_router/workspace.py',
     data-highlight='47-52')
     :markdown
@@ -107,6 +113,10 @@
       They each hold two attributes: `contact_uri` with a phone number
       and `products` with a list of the products which each worker is
       specialized in.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workers](//www.twilio.com/docs/api/taskrouter/workers)
 
   .step(data-title='Creating the Task Queues', data-file='task_router/workspace.py',
     data-highlight='54-63')
@@ -124,6 +134,11 @@
       1. `Default` - This queue targets all users and can be used when there are
          no specialist around for the chosen product. We can use the `"1==1"`
          expression here.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Task Queues](//www.twilio.com/docs/api/taskrouter/taskqueues)
+      * [TargetWorkers's Expressions](//www.twilio.com/docs/api/taskrouter/taskqueues#target-workers)
 
   .step(data-title='Creating a Workflow', data-file='task_router/workspace.py',
     data-highlight='65-73,83-97')
@@ -146,6 +161,10 @@
 
       1. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
          Task Queue.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workflows](//www.twilio.com/docs/api/taskrouter/workflows)
 
   .step(data-title="Handling Twilio's Request", data-file='task_router/views.py',
     data-highlight='32-38')
