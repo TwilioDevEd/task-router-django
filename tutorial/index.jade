@@ -76,9 +76,7 @@
       1. `host` - A public URL which Twilio can send requests. This can be
          either a cloud service or [ngrok][ngrok-url], which can expose a local
          application to the internet.
-
       1. `bob_number` - The telephone number of Bob, the Programmable SMS specialist.
-
       1. `alice_number` - Same for Alice, the Programmable Voice specialist.
       
       First, we parse the JSON file and store in `workspace_json` variable.
@@ -97,7 +95,7 @@
       # Creating a Workspace
 
       After parsing, we call `workspace.delete` to delete the previous
-      Workspace, if it was already created, and `workspace.create` to create a
+      Workspace if it was already created, and `workspace.create` to create a
       new one.
 
   .step(data-title='Creating the Workers', data-file='task_router/workspace.py',
@@ -121,31 +119,25 @@
 
       1. `SMS` - Will target Workers specialized in Programmable SMS, such
          as Bob, using the expression `"products HAS \"ProgrammableSMS\""`.
-
       1. `Voice` - Will do the same for Programmable Voice Workers, such
          as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
-
       1. `Default` - This queue targets all users and can be used when there are
          no specialist around for the chosen product. We can use the `"1==1"`
          expression here.
 
   .step(data-title='Creating a Workflow', data-file='task_router/workspace.py',
-    data-highlight='65-97')
+    data-highlight='65-73,83-97')
     :markdown
       # Creating a Workflow
 
       Finally, we set up the Workflow with `workspace.add_workflow` using the
       following parameters:
 
-      1. `name` as the name of a Workflow
-
+      1. `name` as the name of a Workflow.
       1. `callback` as the public URL where a request will be made when this Workflow
          assigns a Task to a Worker. We will learn how to implement it on the next steps.
-
       1. `timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
-
-      1. `routingConfiguration`, which is a set of rules for matching Tasks into Task Queues.
-
+      1. `routingConfiguration` which is a set of rules for matching Tasks into Task Queues.
       The routing configuration will take a Task attributes and match with Task
       Queues. This application's Workflow rules are defined as:
       1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
@@ -213,9 +205,9 @@
       When TaskRouter selects a Worker, it does the following:
 
       1. The Task's Assignment Status is set to 'reserved'.
-      2. A [Reservation instance][reservation-instance-doc] is generated,
-      linking the Task to the selected Worker.
-      3. At the same time the Reservation is created, a webhook POST request is
+      1. A [Reservation instance][reservation-instance-doc] is generated,
+         linking the Task to the selected Worker.
+      1. At the same time the Reservation is created, a POST request is
       made to the Workflow's AssignmentCallbackURL, which was configured using
       the [`configure_workspace`][workspace-command-github] Django command.
       This request includes the full details of the Task, the selected Worker,
