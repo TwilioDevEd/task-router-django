@@ -30,7 +30,7 @@ TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 
 # E-mail address that will receive transcriptions from voicemail
-MISSED_CALLS_EMAIL_ADDRESS = 'your@email.here'
+MISSED_CALLS_EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', 'your@email.here')
 
 # Workflow SID
 WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
