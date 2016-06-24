@@ -7,15 +7,23 @@ from twilio import twiml
 from .models import MissedCall
 from twilio.rest import TwilioRestClient
 import json
+try:
+    from urllib import quote_plus
+except:
+    # PY3
+    from urllib.parse import quote_plus
+
+
 WORKFLOW_SID = settings.WORKFLOW_SID
 POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
+EMAIL = settings.MISSED_CALLS_EMAIL_ADDRESS
 
 
 def root(request):
     """ Renders a missed calls list, with product and phone number """
-    missed_calls = MissedCall.objects.order_by('created')
+    missed_calls = MissedCall.objects.order_by('-created')
     return render(request, 'index.html', {
         'missed_calls': missed_calls
     })
@@ -60,11 +68,13 @@ def events(request):
         MissedCall.objects.create(
             phone_number=task_attributes['from'],
             selected_product=task_attributes['selected_product'])
-        _hangup_call(task_attributes['call_sid'])
+        _voicemail(task_attributes['call_sid'])
 
     return HttpResponse('')
 
 
-def _hangup_call(call_sid):
+def _voicemail(call_sid):
+    msg = 'Sorry, All agents are busy. Please leave a message. We will call you as soon as possible'
+    route_url = 'http://twimlets.com/voicemail?Email=' + EMAIL + '&Message=' + quote_plus(msg)
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
-    client.calls.update(call_sid, status="completed")
+    client.calls.route(call_sid, route_url)
