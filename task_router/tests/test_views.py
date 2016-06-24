@@ -1,7 +1,7 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
-from mock import patch
-from task_router.views import POST_WORK_ACTIVITY_SID
+from mock import patch, Mock
+from task_router import views
 from task_router.models import MissedCall
 
 import json
@@ -63,10 +63,10 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content.decode('utf8')
 
         expected = {"instruction": "dequeue",
-                    "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
+                    "post_work_activity_sid": views.POST_WORK_ACTIVITY_SID}
         self.assertEqual(json.loads(content), expected)
 
-    @patch('task_router.views._hangup_call')
+    @patch('task_router.views._voicemail')
     def test_event_persist_missed_call(self, _):
         # Act
         response = self.client.post('/events', {
@@ -86,7 +86,7 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertEqual(1, len(missedCalls))
         self.assertEqual('ACMERockets', missedCalls[0].selected_product)
 
-    @patch('task_router.views._hangup_call')
+    @patch('task_router.views._voicemail')
     def test_event_persist_canceled_call(self, _):
         # Act
         response = self.client.post('/events', {
@@ -106,8 +106,10 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertEqual(1, len(missedCalls))
         self.assertEqual('ACMETNT', missedCalls[0].selected_product)
 
-    @patch('task_router.views._hangup_call')
-    def test_hangups_on_missed_call(self, mocked_hangup_call):
+    def test_voicemail_on_missed_call(self):
+        client_mock = Mock()
+        client_mock.calls.route.return_value = 123
+        views.TwilioRestClient = Mock(return_value=client_mock)
         # Act
         self.client.post('/events', {
             'EventType': 'workflow.timeout',
@@ -117,7 +119,10 @@ class HomePageTest(TestCase, XmlTestCase):
             "selected_product": "ACMERockets"}
             '''
         })
-        mocked_hangup_call.assert_called_with('123')
+        expected_url = 'http://twimlets.com/voicemail?Email=your@email.here&Message='
+        expected_url += 'Sorry%2C+All+agents+are+busy.+Please+leave+a+message.+'
+        expected_url += 'We+will+call+you+as+soon+as+possible'
+        client_mock.calls.route.assert_called_with('123', expected_url)
 
     def test_event_ignore_others(self):
         # Act
