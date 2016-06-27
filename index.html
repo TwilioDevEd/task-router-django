@@ -57,7 +57,7 @@ wrapping API calls to populate a Workspace.</p>
 <li><a href="//twilio-python.readthedocs.io/en/latest/usage/taskrouter.html">TaskRouter: Python API Documentation</a></li>
 </ul>
 </div><div data-title="The Create Workspace Command" data-file="task_router/management/commands/create_workspace.py" data-highlight="6-55" class="step"><h2 id="the-create-workspace-command">The Create Workspace Command</h2>
-<p>This application uses the <code>configure_workspace</code> <a href="//docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
+<p>This application uses the <code>create_workspace</code> <a href="//docs.djangoproject.com/en/1.9/howto/custom-management-commands/#">Django
 Command</a> to orchestrate calls to our <code>workspace</code> module
 in order to configure a Workspace. The command uses data provided by
 <code>workspace.json</code> and the following arguments:</p>
@@ -184,7 +184,7 @@ handle this Task.</p>
 linking the Task to the selected Worker.</li>
 <li>At the same time the Reservation is created, a POST request is
 made to the Workflow&#39;s AssignmentCallbackURL, which was configured using
-the <a href="//github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>configure_workspace</code></a> Django command.
+the <a href="//github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py"><code>create_workspace</code></a> Django command.
 This request includes the full details of the Task, the selected Worker,
 and the Reservation.</li>
 </ol>

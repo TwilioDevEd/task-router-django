@@ -70,7 +70,7 @@
     :markdown
       ## The Create Workspace Command
 
-      This application uses the `configure_workspace` [Django
+      This application uses the `create_workspace` [Django
       Command][django-commands] to orchestrate calls to our `workspace` module
       in order to configure a Workspace. The command uses data provided by
       `workspace.json` and the following arguments:
@@ -229,7 +229,7 @@
          linking the Task to the selected Worker.
       1. At the same time the Reservation is created, a POST request is
       made to the Workflow's AssignmentCallbackURL, which was configured using
-      the [`configure_workspace`][workspace-command-github] Django command.
+      the [`create_workspace`][workspace-command-github] Django command.
       This request includes the full details of the Task, the selected Worker,
       and the Reservation.
 
