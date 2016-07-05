@@ -6,8 +6,12 @@ from django.conf import settings
 import json
 
 
-def first(items):
-    items = list(items)
+def filter_friendly_name(name):
+    return lambda item: item.friendly_name == name
+
+
+def first_by_name(name, items):
+    items = filter(filter_friendly_name(name), list(items))
     return items[0] if items else None
 
 
@@ -19,7 +23,7 @@ def build_client():
 
 def get_by_name(name):
     workspaces = build_client().workspaces.list()
-    return first(filter(lambda workspace: workspace.friendly_name == name, workspaces))
+    return first_by_name(name, workspaces)
 
 
 def delete(name):
@@ -74,11 +78,11 @@ class Workspace():
 
     def get_activity_by_name(self, name):
         activities = self.client.activities(self.sid).list()
-        return first(filter(lambda activity: activity.friendly_name == name, activities))
+        return first_by_name(name, activities)
 
     def get_queue_by_name(self, name):
         queues = self.client.task_queues(self.sid).list()
-        return first(filter(lambda queue: queue.friendly_name == name, queues))
+        return first_by_name(name, queues)
 
     def get_workflow_json_configuration(self, configuration):
         default_queue = self.get_queue_by_name('Default')
