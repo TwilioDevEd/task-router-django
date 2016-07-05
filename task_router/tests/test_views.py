@@ -124,6 +124,23 @@ class HomePageTest(TestCase, XmlTestCase):
         expected_url += 'We+will+call+you+as+soon+as+possible'
         client_mock.calls.route.assert_called_with('123', expected_url)
 
+    def test_sms_for_worker_going_offline(self):
+        sender_mock = Mock()
+        views.sms_sender = sender_mock
+        views.TWILIO_NUMBER = '+54321'
+
+        # Act
+        self.client.post('/events', {
+            'EventType': 'worker.activity.update',
+            'WorkerActivityName': 'Offline',
+            'WorkerAttributes': '{"contact_uri": "+1234"}'
+        })
+
+        expectedMessage = 'Your status has changed to Offline. Reply with '\
+            '"On" to get back Online'
+        sender_mock.send.assert_called_with(
+                to='+1234', from_='+54321', body=expectedMessage)
+
     def test_event_ignore_others(self):
         # Act
         response = self.client.post('/events', {

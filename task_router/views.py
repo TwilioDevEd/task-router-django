@@ -7,6 +7,7 @@ from twilio import twiml
 from .models import MissedCall
 from twilio.rest import TwilioRestClient
 import json
+import sms_sender
 try:
     from urllib import quote_plus
 except:
@@ -18,6 +19,7 @@ WORKFLOW_SID = settings.WORKFLOW_SID
 POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
+TWILIO_NUMBER = settings.TWILIO_NUMBER
 EMAIL = settings.MISSED_CALLS_EMAIL_ADDRESS
 
 
@@ -60,15 +62,20 @@ def assignment(request):
 @csrf_exempt
 def events(request):
     """ Events callback for missed calls """
-    event_type = request.POST.get('EventType')
-    desired_events = ['workflow.timeout', 'task.canceled']
+    POST = request.POST
+    event_type = POST.get('EventType')
+    task_events = ['workflow.timeout', 'task.canceled']
+    worker_event = 'worker.activity.update'
 
-    if event_type in desired_events:
-        task_attributes = json.loads(request.POST['TaskAttributes'])
-        MissedCall.objects.create(
-            phone_number=task_attributes['from'],
-            selected_product=task_attributes['selected_product'])
+    if event_type in task_events:
+        task_attributes = json.loads(POST['TaskAttributes'])
+        _save_missed_call(task_attributes)
         _voicemail(task_attributes['call_sid'])
+    elif event_type == worker_event and POST['WorkerActivityName'] == 'Offline':
+        message = 'Your status has changed to Offline. Reply with '\
+            '"On" to get back Online'
+        worker_number = json.loads(POST['WorkerAttributes'])['contact_uri']
+        sms_sender.send(to=worker_number, from_=TWILIO_NUMBER, body=message)
 
     return HttpResponse('')
 
@@ -78,3 +85,9 @@ def _voicemail(call_sid):
     route_url = 'http://twimlets.com/voicemail?Email=' + EMAIL + '&Message=' + quote_plus(msg)
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
     client.calls.route(call_sid, route_url)
+
+
+def _save_missed_call(task_attributes):
+    MissedCall.objects.create(
+            phone_number=task_attributes['from'],
+            selected_product=task_attributes['selected_product'])
