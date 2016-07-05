@@ -127,11 +127,7 @@ class HomePageTest(TestCase, XmlTestCase):
     def test_event_ignore_others(self):
         # Act
         response = self.client.post('/events', {
-            'EventType': 'other',
-            'TaskAttributes': '''
-            {"from": "+266696687",
-            "selected_product": "ACMERockets"}
-            '''
+            'EventType': 'other'
         })
 
         status_code = response.status_code
