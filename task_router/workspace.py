@@ -4,14 +4,13 @@ from twilio.task_router.workflow_rule import WorkflowRule
 from twilio.task_router.workflow_config import WorkflowConfig
 from django.conf import settings
 import json
+HOST = settings.HOST
+ALICE_NUMBER = settings.ALICE_NUMBER
+BOB_NUMBER = settings.BOB_NUMBER
+WORKSPACE_NAME = 'Twilio Workspace'
 
 
-def filter_friendly_name(name):
-    return lambda item: item.friendly_name == name
-
-
-def first_by_name(name, items):
-    items = filter(filter_friendly_name(name), list(items))
+def first(items):
     return items[0] if items else None
 
 
@@ -21,81 +20,100 @@ def build_client():
     return TwilioTaskRouterClient(account_sid, auth_token)
 
 
-def get_by_name(name):
-    workspaces = build_client().workspaces.list()
-    return first_by_name(name, workspaces)
+CLIENT = build_client()
 
 
-def delete(name):
-    workspace = get_by_name(name)
-    build_client().workspaces.delete(workspace.sid)
+def activities_dict(workspace_sid):
+    activities = build_client().activities(workspace_sid).list()
+    return dict((activity.friendly_name, activity) for activity in activities)
 
 
-def create(name, event_callback):
-    client = build_client()
-    workspace = get_by_name(name)
-    if not workspace:
-        workspace = client.workspaces.create(
-                friendly_name=name,
-                event_callback_url=event_callback,
-                template=None)
-    return Workspace(workspace)
+def setup():
+    workspace = create_workspace()
+    activities = activities_dict(workspace.sid)
+    create_workers(workspace, activities)
+    queues = create_task_queues(workspace, activities)
+    workflow = create_workflow(workspace, queues)
 
 
-class Workspace():
+def create_workspace():
+    try:
+        workspace = first(CLIENT.workspaces.list(friendly_name=WORKSPACE_NAME))
+        CLIENT.workspaces.delete(workspace.sid)
+    except:
+        pass
 
-    def __init__(self, workspace):
-        self.sid = workspace.sid
-        self.client = build_client()
+    events_callback = HOST+'/events'
+    return CLIENT.workspaces.create(
+            friendly_name=WORKSPACE_NAME,
+            event_callback_url=events_callback,
+            template=None)
 
-    def add_worker(self, name, attributes):
-        worker = self.client.workers(self.sid).create(
-            activity_sid=self.get_activity_by_name('Idle').sid,
-            friendly_name=name,
-            attributes=json.dumps(attributes))
-        return worker
 
-    def add_queue(self, name, worker_query):
-        reservation_activity = self.get_activity_by_name('Reserved')
-        assignment_activity = self.get_activity_by_name('Busy')
-        queue = self.client.task_queues(self.sid).create(
-                friendly_name=name,
-                reservation_activity_sid=reservation_activity.sid,
-                assignment_activity_sid=assignment_activity.sid,
-                target_workers=worker_query
-                )
-        return queue
+def create_workers(workspace, activities):
+    alice_attributes = {
+        "products": ["ProgrammableVoice"],
+        "contact_uri": ALICE_NUMBER
+    }
+    CLIENT.workers(workspace.sid).create(
+        activity_sid=activities['Idle'].sid,
+        friendly_name='Alice',
+        attributes=json.dumps(alice_attributes))
+    bob_attributes = {
+        "products": ["ProgrammableSMS"],
+        "contact_uri": BOB_NUMBER
+    }
+    CLIENT.workers(workspace.sid).create(
+        activity_sid=activities['Idle'].sid,
+        friendly_name='Bob',
+        attributes=json.dumps(bob_attributes))
 
-    def add_workflow(self, name, callback='http://example.com/',
-                     timeout=30, configuration=None):
-        workflow = self.client.workflows(self.sid).create(
-            friendly_name=name,
-            assignment_callback_url=callback,
-            fallback_assignment_callback_url=callback,
-            task_reservation_timeout=str(timeout),
-            configuration=self.get_workflow_json_configuration(configuration))
-        return workflow
 
-    def get_activity_by_name(self, name):
-        activities = self.client.activities(self.sid).list()
-        return first_by_name(name, activities)
+def create_task_queues(workspace, activities):
+    default_queue = CLIENT.task_queues(workspace.sid).create(
+            friendly_name='Default',
+            reservation_activity_sid=activities['Reserved'].sid,
+            assignment_activity_sid=activities['Busy'].sid,
+            target_workers='1==1'
+            )
+    sms_queue = CLIENT.task_queues(workspace.sid).create(
+            friendly_name='SMS',
+            reservation_activity_sid=activities['Reserved'].sid,
+            assignment_activity_sid=activities['Busy'].sid,
+            target_workers='selected_product=="ProgrammableSMS"')
+    voice_queue = CLIENT.task_queues(workspace.sid).create(
+            friendly_name='Voice',
+            reservation_activity_sid=activities['Reserved'].sid,
+            assignment_activity_sid=activities['Busy'].sid,
+            target_workers='selected_product=="ProgrammableVoice"'
+            )
 
-    def get_queue_by_name(self, name):
-        queues = self.client.task_queues(self.sid).list()
-        return first_by_name(name, queues)
+    return {'sms': sms_queue, 'voice': voice_queue, 'default': default_queue}
 
-    def get_workflow_json_configuration(self, configuration):
-        default_queue = self.get_queue_by_name('Default')
-        defaultRuleTarget = WorkflowRuleTarget(default_queue.sid, '1==1', 1, 30)
 
-        rules = []
-        for rule in configuration:
-            queue = self.get_queue_by_name(rule['targetTaskQueue'])
-            queueRuleTargets = []
-            queueRuleTarget = WorkflowRuleTarget(queue.sid, None, 5, 30)
-            queueRuleTargets.append(queueRuleTarget)
-            queueRuleTargets.append(defaultRuleTarget)
-            rules.append(WorkflowRule(rule['expression'], queueRuleTargets, None))
+def create_workflow(workspace, queues):
+    defaultRuleTarget = WorkflowRuleTarget(queues['default'].sid, '1==1', 1, 30)
 
-        config = WorkflowConfig(rules, defaultRuleTarget)
-        return config.to_json()
+    rules = []
+    queueRuleTargets = []
+    queueRuleTarget = WorkflowRuleTarget(queues['sms'].sid, None, 5, 30)
+    queueRuleTargets.append(queueRuleTarget)
+    queueRuleTargets.append(defaultRuleTarget)
+    rules.append(
+            WorkflowRule("selected_product==\"ProgrammableSMS\"",
+                         [queueRuleTarget, defaultRuleTarget], None))
+    queueRuleTargets = []
+    queueRuleTarget = WorkflowRuleTarget(queues['voice'].sid, None, 5, 30)
+    queueRuleTargets.append(queueRuleTarget)
+    queueRuleTargets.append(defaultRuleTarget)
+    rules.append(
+            WorkflowRule("selected_product==\"ProgrammableVoice\"",
+                         [queueRuleTarget, defaultRuleTarget], None))
+
+    config = WorkflowConfig(rules, defaultRuleTarget)
+    return CLIENT.workflows(workspace.sid).create(
+        friendly_name='Sales',
+        assignment_callback_url=HOST + '/assignment',
+        fallback_assignment_callback_url=HOST + '/assignment',
+        task_reservation_timeout=15,
+        configuration=config.to_json())
