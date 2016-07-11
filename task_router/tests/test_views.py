@@ -1,8 +1,8 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
 from mock import patch, Mock
-from task_router import views
 from task_router.models import MissedCall
+from task_router import workspace
 
 import json
 
@@ -11,6 +11,13 @@ class HomePageTest(TestCase, XmlTestCase):
 
     def setUp(self):
         self.client = Client()
+        self.original = workspace.setup
+        setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='123'),
+                                                               {'Idle': Mock(sid='idle_sid')}))
+        workspace.setup = setup_mock
+
+    def tearDown(self):
+        workspace.setup = self.original
 
     def test_home_page(self):
         # Act
@@ -63,7 +70,7 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content.decode('utf8')
 
         expected = {"instruction": "dequeue",
-                    "post_work_activity_sid": views.POST_WORK_ACTIVITY_SID}
+                    "post_work_activity_sid": 'idle_sid'}
         self.assertEqual(json.loads(content), expected)
 
     @patch('task_router.views._voicemail')
@@ -109,6 +116,7 @@ class HomePageTest(TestCase, XmlTestCase):
     def test_voicemail_on_missed_call(self):
         client_mock = Mock()
         client_mock.calls.route.return_value = 123
+        from task_router import views
         views.TwilioRestClient = Mock(return_value=client_mock)
         # Act
         self.client.post('/events', {
@@ -126,6 +134,7 @@ class HomePageTest(TestCase, XmlTestCase):
 
     def test_sms_for_worker_going_offline(self):
         sender_mock = Mock()
+        from task_router import views
         views.sms_sender = sender_mock
         views.TWILIO_NUMBER = '+54321'
 

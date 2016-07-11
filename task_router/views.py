@@ -5,6 +5,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from twilio import twiml
 from .models import MissedCall
+from . import workspace
 from twilio.rest import TwilioRestClient
 import json
 import sms_sender
@@ -14,9 +15,7 @@ except:
     # PY3
     from urllib.parse import quote_plus
 
-
-WORKFLOW_SID = settings.WORKFLOW_SID
-POST_WORK_ACTIVITY_SID = settings.POST_WORK_ACTIVITY_SID
+WORKSPACE_INFO = workspace.setup()
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 TWILIO_NUMBER = settings.TWILIO_NUMBER
@@ -46,7 +45,7 @@ def enqueue(request):
     resp = twiml.Response()
     digits = request.POST['Digits']
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
-    with resp.enqueue(None, workflowSid=WORKFLOW_SID) as e:
+    with resp.enqueue(None, workflowSid=WORKSPACE_INFO.workflow_sid) as e:
         e.task('{"selected_product": "%s"}' % selected_product)
     return HttpResponse(resp)
 
@@ -55,7 +54,7 @@ def enqueue(request):
 def assignment(request):
     """ Task assignment """
     response = {"instruction": "dequeue",
-                "post_work_activity_sid": POST_WORK_ACTIVITY_SID}
+                "post_work_activity_sid": WORKSPACE_INFO.post_work_activity_sid}
     return JsonResponse(response)
 
 

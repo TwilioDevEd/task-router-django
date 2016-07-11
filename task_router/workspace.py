@@ -21,6 +21,7 @@ def build_client():
 
 
 CLIENT = build_client()
+CACHE = {}
 
 
 def activities_dict(workspace_sid):
@@ -28,12 +29,23 @@ def activities_dict(workspace_sid):
     return dict((activity.friendly_name, activity) for activity in activities)
 
 
+class WorkspaceInfo:
+
+    def __init__(self, workflow, activities):
+        self.workflow_sid = workflow.sid
+        self.activities = activities
+        self.post_work_activity_sid = activities['Idle'].sid
+
+
 def setup():
-    workspace = create_workspace()
-    activities = activities_dict(workspace.sid)
-    create_workers(workspace, activities)
-    queues = create_task_queues(workspace, activities)
-    workflow = create_workflow(workspace, queues)
+    if 'WORKSPACE_INFO' not in CACHE:
+        workspace = create_workspace()
+        activities = activities_dict(workspace.sid)
+        create_workers(workspace, activities)
+        queues = create_task_queues(workspace, activities)
+        workflow = create_workflow(workspace, queues)
+        CACHE['WORKSPACE_INFO'] = WorkspaceInfo(workflow, activities)
+    return CACHE['WORKSPACE_INFO']
 
 
 def create_workspace():
