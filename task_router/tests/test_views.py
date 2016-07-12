@@ -12,8 +12,11 @@ class HomePageTest(TestCase, XmlTestCase):
     def setUp(self):
         self.client = Client()
         self.original = workspace.setup
-        setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='123'),
-                                                               {'Idle': Mock(sid='idle_sid')}))
+        setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='workspace_sid'),
+                                                               Mock(sid='workflow_sid'),
+                                                               {'Idle': Mock(sid='idle_sid'),
+                                                                'Offline': Mock(sid='offline_sid')},
+                                                               {'+123': 'worker_sid'}))
         workspace.setup = setup_mock
 
     def tearDown(self):
@@ -27,6 +30,32 @@ class HomePageTest(TestCase, XmlTestCase):
         # This is a class-based view, so we can mostly rely on Django's own
         # tests to make sure it works. We'll check for a bit of copy, though
         self.assertIn('Task Router', str(response.content))
+
+    def test_incoming_sms_changes_worker_activity_to_offline(self):
+        from task_router import views
+        client_mock = Mock()
+        update_mock = Mock()
+        client_mock.workers.return_value = Mock(update=update_mock)
+        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        # Act
+        response = self.client.post('/sms/incoming/', data={'Body': 'off', 'From': '+123'})
+
+        expected_text = 'Your status has changed to Offline'
+        self.assertIn(expected_text, response.content)
+        update_mock.assert_called_with('worker_sid', activity_sid='offline_sid')
+
+    def test_incoming_sms_changes_worker_activity_to_idle(self):
+        from task_router import views
+        client_mock = Mock()
+        update_mock = Mock()
+        client_mock.workers.return_value = Mock(update=update_mock)
+        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        # Act
+        response = self.client.post('/sms/incoming/', data={'Body': 'on', 'From': '+123'})
+
+        expected_text = 'Your status has changed to Idle'
+        self.assertIn(expected_text, response.content)
+        update_mock.assert_called_with('worker_sid', activity_sid='idle_sid')
 
     def test_incoming_call(self):
         # Act

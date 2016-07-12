@@ -7,6 +7,7 @@ from twilio import twiml
 from .models import MissedCall
 from . import workspace
 from twilio.rest import TwilioRestClient
+from twilio.rest import TwilioTaskRouterClient
 import json
 import sms_sender
 try:
@@ -28,6 +29,22 @@ def root(request):
     return render(request, 'index.html', {
         'missed_calls': missed_calls
     })
+
+
+@csrf_exempt
+def incoming_sms(request):
+    """ Changes worker activity and returns a confirmation """
+    client = TwilioTaskRouterClient(ACCOUNT_SID, AUTH_TOKEN)
+    activity = 'Idle' if request.POST['Body'].lower().strip() == 'on' else 'Offline'
+    activity_sid = WORKSPACE_INFO.activities[activity].sid
+    worker_sid = WORKSPACE_INFO.workers[request.POST['From']]
+    workspace_sid = WORKSPACE_INFO.workspace_sid
+
+    client.workers(workspace_sid).update(worker_sid, activity_sid=activity_sid)
+    resp = twiml.Response()
+    message = 'Your status has changed to ' + activity
+    resp.message(message)
+    return HttpResponse(resp)
 
 
 @csrf_exempt

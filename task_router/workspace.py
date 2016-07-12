@@ -31,20 +31,22 @@ def activities_dict(workspace_sid):
 
 class WorkspaceInfo:
 
-    def __init__(self, workflow, activities):
+    def __init__(self, workspace, workflow, activities, workers):
         self.workflow_sid = workflow.sid
+        self.workspace_sid = workspace.sid
         self.activities = activities
         self.post_work_activity_sid = activities['Idle'].sid
+        self.workers = workers
 
 
 def setup():
     if 'WORKSPACE_INFO' not in CACHE:
         workspace = create_workspace()
         activities = activities_dict(workspace.sid)
-        create_workers(workspace, activities)
+        workers = create_workers(workspace, activities)
         queues = create_task_queues(workspace, activities)
         workflow = create_workflow(workspace, queues)
-        CACHE['WORKSPACE_INFO'] = WorkspaceInfo(workflow, activities)
+        CACHE['WORKSPACE_INFO'] = WorkspaceInfo(workspace, workflow, activities, workers)
     return CACHE['WORKSPACE_INFO']
 
 
@@ -67,7 +69,7 @@ def create_workers(workspace, activities):
         "products": ["ProgrammableVoice"],
         "contact_uri": ALICE_NUMBER
     }
-    CLIENT.workers(workspace.sid).create(
+    alice = CLIENT.workers(workspace.sid).create(
         activity_sid=activities['Idle'].sid,
         friendly_name='Alice',
         attributes=json.dumps(alice_attributes))
@@ -75,10 +77,11 @@ def create_workers(workspace, activities):
         "products": ["ProgrammableSMS"],
         "contact_uri": BOB_NUMBER
     }
-    CLIENT.workers(workspace.sid).create(
+    bob = CLIENT.workers(workspace.sid).create(
         activity_sid=activities['Idle'].sid,
         friendly_name='Bob',
         attributes=json.dumps(bob_attributes))
+    return {BOB_NUMBER: bob.sid, ALICE_NUMBER: alice.sid}
 
 
 def create_task_queues(workspace, activities):
@@ -92,12 +95,12 @@ def create_task_queues(workspace, activities):
             friendly_name='SMS',
             reservation_activity_sid=activities['Reserved'].sid,
             assignment_activity_sid=activities['Busy'].sid,
-            target_workers='selected_product=="ProgrammableSMS"')
+            target_workers='"ProgrammableSMS" in products')
     voice_queue = CLIENT.task_queues(workspace.sid).create(
             friendly_name='Voice',
             reservation_activity_sid=activities['Reserved'].sid,
             assignment_activity_sid=activities['Busy'].sid,
-            target_workers='selected_product=="ProgrammableVoice"'
+            target_workers='"ProgrammableVoice" in products'
             )
 
     return {'sms': sms_queue, 'voice': voice_queue, 'default': default_queue}
