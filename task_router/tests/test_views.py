@@ -1,8 +1,8 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
 from mock import patch, Mock
-from task_router import views
 from task_router.models import MissedCall
+from task_router import workspace
 
 import json
 
@@ -11,6 +11,16 @@ class HomePageTest(TestCase, XmlTestCase):
 
     def setUp(self):
         self.client = Client()
+        self.original = workspace.setup
+        setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='workspace_sid'),
+                                                               Mock(sid='workflow_sid'),
+                                                               {'Idle': Mock(sid='idle_sid'),
+                                                                'Offline': Mock(sid='offline_sid')},
+                                                               {'+123': 'worker_sid'}))
+        workspace.setup = setup_mock
+
+    def tearDown(self):
+        workspace.setup = self.original
 
     def test_home_page(self):
         # Act
@@ -20,6 +30,32 @@ class HomePageTest(TestCase, XmlTestCase):
         # This is a class-based view, so we can mostly rely on Django's own
         # tests to make sure it works. We'll check for a bit of copy, though
         self.assertIn('Task Router', str(response.content))
+
+    def test_incoming_sms_changes_worker_activity_to_offline(self):
+        from task_router import views
+        client_mock = Mock()
+        update_mock = Mock()
+        client_mock.workers.return_value = Mock(update=update_mock)
+        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        # Act
+        response = self.client.post('/sms/incoming/', data={'Body': 'off', 'From': '+123'})
+
+        expected_text = 'Your status has changed to Offline'
+        self.assertIn(expected_text, response.content.decode('utf8'))
+        update_mock.assert_called_with('worker_sid', activity_sid='offline_sid')
+
+    def test_incoming_sms_changes_worker_activity_to_idle(self):
+        from task_router import views
+        client_mock = Mock()
+        update_mock = Mock()
+        client_mock.workers.return_value = Mock(update=update_mock)
+        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        # Act
+        response = self.client.post('/sms/incoming/', data={'Body': 'on', 'From': '+123'})
+
+        expected_text = 'Your status has changed to Idle'
+        self.assertIn(expected_text, response.content.decode('utf8'))
+        update_mock.assert_called_with('worker_sid', activity_sid='idle_sid')
 
     def test_incoming_call(self):
         # Act
@@ -63,7 +99,7 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content.decode('utf8')
 
         expected = {"instruction": "dequeue",
-                    "post_work_activity_sid": views.POST_WORK_ACTIVITY_SID}
+                    "post_work_activity_sid": 'idle_sid'}
         self.assertEqual(json.loads(content), expected)
 
     @patch('task_router.views._voicemail')
@@ -109,6 +145,7 @@ class HomePageTest(TestCase, XmlTestCase):
     def test_voicemail_on_missed_call(self):
         client_mock = Mock()
         client_mock.calls.route.return_value = 123
+        from task_router import views
         views.TwilioRestClient = Mock(return_value=client_mock)
         # Act
         self.client.post('/events', {
@@ -124,14 +161,28 @@ class HomePageTest(TestCase, XmlTestCase):
         expected_url += 'We+will+call+you+as+soon+as+possible'
         client_mock.calls.route.assert_called_with('123', expected_url)
 
+    def test_sms_for_worker_going_offline(self):
+        sender_mock = Mock()
+        from task_router import views
+        views.sms_sender = sender_mock
+        views.TWILIO_NUMBER = '+54321'
+
+        # Act
+        self.client.post('/events', {
+            'EventType': 'worker.activity.update',
+            'WorkerActivityName': 'Offline',
+            'WorkerAttributes': '{"contact_uri": "+1234"}'
+        })
+
+        expectedMessage = 'Your status has changed to Offline. Reply with '\
+            '"On" to get back Online'
+        sender_mock.send.assert_called_with(
+                to='+1234', from_='+54321', body=expectedMessage)
+
     def test_event_ignore_others(self):
         # Act
         response = self.client.post('/events', {
-            'EventType': 'other',
-            'TaskAttributes': '''
-            {"from": "+266696687",
-            "selected_product": "ACMERockets"}
-            '''
+            'EventType': 'other'
         })
 
         status_code = response.status_code
