@@ -41,7 +41,7 @@ class HomePageTest(TestCase, XmlTestCase):
         response = self.client.post('/sms/incoming/', data={'Body': 'off', 'From': '+123'})
 
         expected_text = 'Your status has changed to Offline'
-        self.assertIn(expected_text, response.content)
+        self.assertIn(expected_text, response.content.decode('utf8'))
         update_mock.assert_called_with('worker_sid', activity_sid='offline_sid')
 
     def test_incoming_sms_changes_worker_activity_to_idle(self):
@@ -54,7 +54,7 @@ class HomePageTest(TestCase, XmlTestCase):
         response = self.client.post('/sms/incoming/', data={'Body': 'on', 'From': '+123'})
 
         expected_text = 'Your status has changed to Idle'
-        self.assertIn(expected_text, response.content)
+        self.assertIn(expected_text, response.content.decode('utf8'))
         update_mock.assert_called_with('worker_sid', activity_sid='idle_sid')
 
     def test_incoming_call(self):

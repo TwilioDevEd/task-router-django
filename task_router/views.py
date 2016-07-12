@@ -9,7 +9,7 @@ from . import workspace
 from twilio.rest import TwilioRestClient
 from twilio.rest import TwilioTaskRouterClient
 import json
-import sms_sender
+from . import sms_sender
 try:
     from urllib import quote_plus
 except:

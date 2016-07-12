@@ -37,12 +37,6 @@ ALICE_NUMBER = os.environ.get('ALICE_NUMBER')
 # E-mail address that will receive transcriptions from voicemail
 MISSED_CALLS_EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', 'your@email.here')
 
-# Workflow SID
-WORKFLOW_SID = os.environ.get('WORKFLOW_SID')
-
-# Post work Activity SID
-POST_WORK_ACTIVITY_SID = os.environ.get('POST_WORK_ACTIVITY_SID')
-
 if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN):
     missing_config_values = """
     You must set the TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
