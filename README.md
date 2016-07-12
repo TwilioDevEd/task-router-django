@@ -76,24 +76,6 @@ uses a PostgreSQL database to log phone calls which were not assisted.
    $ python manage.py test --settings=twilio_sample_project.settings.test
    ```
 
-1. Configure the phone number of the agents which are going to answer the calls.
-
-   ```bash
-   $ python manage.py create_workspace https://<sub-domain>.ngrok.io <agent1-phone> <agent2-phone>
-   ```
-
-   You will receive a message telling you to export 2 environment variables.
-
-   ```bash
-   $ export WORKFLOW_SID=<hashvalue-workflow-sid>
-   $ export POST_WORK_ACTIVITY_SID=<hashvalue-post-work-activity-sid>
-   ```
-
-   When the user calls, he will choose one option which will redirect him to
-   the first agent whose phone number is __agent1-phone__. If the user gets
-   no answer in 30 seconds he will be redirected to the second agent whose
-   phone number is __agent2-phone__.
-
 
 1. Start the server.
 
@@ -127,23 +109,35 @@ uses a PostgreSQL database to log phone calls which were not assisted.
 
    ![Configure SMS](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
 
-### How To Demo?
+## How to Demo
 
-1. Call your Twilio Phone Number. You will get a voice response:
+1. First make sure you have exported all the required environment variables from
+   the `.env.example` file. Bob and Alice's number should be two different numbers
+   where you can receive calls and SMSs.
 
+1. When you run the app, a new workspace will be configured. Once that is done,
+   you are ready to call your [Twilio Number](https://www.twilio.com/console/phone-numbers/incoming)
+   where you'll be asked to select a product using your key pad.
 
-   > For Programmable SMS, press one.  
-   For Voice, press any other key.
+1. Select an option and the phone assigned to the product you selected (Bob or Alice's)
+   will start ringing. You can answer the call and have a conversation.
 
+1. Alternatively, if you don't answer the call within 15 seconds, the call should be
+   redirected to the next worker. If the call isn't answered by the second worker,
+   you should be redirected to voice mail and leave a message. The transcription
+   of that message should be sent to the email you specified in your environment variables.
 
-1. Reply with 1.
-1. The specified phone for agent 1 will be called:  __agent1-phone__.
-1. If __agent1-phone__ is not answered in 30 seconds then __agent2-phone__ will
-   be called.
-1. In case the second agent doesn't answer the call, it will be logged as a
-   missed call. You can see all missed calls in the main page of the running
-   server at [http://{sub-domain}.ngrok.io](//localhost:8000).
-1. Repeat the process but enter any key different to __1__ to choose Voice.
+1. Each time a worker misses a call, their activity is changed to offline. Right after they
+   should receive a notification, via SMS, saying that they missed the call. In order to go
+   back online they can reply with `On`. They can as well reply with `Off` in order
+   to go back to offline status.
+
+1. If both workers' activity changes to `Offline` and you call your Twilio Number again,
+   you should be redirected to voice mail after a few seconds as the workflow timeouts
+   when there are no available workers. Change your workers status with the `On`
+   SMS command to be able to receive calls again.
+
+1. Navigate to `https://<ngrok_subdomain>.ngrok.io` to see a list of the missed calls.
 
 [twilio-phone-number]: https://www.twilio.com/console/phone-numbers/incoming
 
