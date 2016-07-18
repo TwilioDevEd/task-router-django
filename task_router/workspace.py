@@ -126,9 +126,10 @@ def create_workflow(workspace, queues):
                          [queueRuleTarget, defaultRuleTarget], None))
 
     config = WorkflowConfig(rules, defaultRuleTarget)
+    callback_url = HOST + '/assignment'
     return CLIENT.workflows(workspace.sid).create(
         friendly_name='Sales',
-        assignment_callback_url=HOST + '/assignment',
-        fallback_assignment_callback_url=HOST + '/assignment',
+        assignment_callback_url=callback_url,
+        fallback_assignment_callback_url=callback_url,
         task_reservation_timeout=15,
         configuration=config.to_json())
