@@ -12,6 +12,7 @@
 ### Prerequisites
 
 1. [Python [2.7;3.4]](https://www.python.org/downloads/) installed in your operative system.
+
 1. A Twilio account with a verified [phone number][twilio-phone-number]. (Get a [free account](//www.twilio.com/try-twilio?utm_campaign=tutorials&utm_medium=readme)
 here.).  If you are using a Twilio Trial Account, you can learn all about it [here](https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work).
 
@@ -95,7 +96,7 @@ You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-us
    $ ngrok http 8000
    ```
 
-Once ngrok is running open up your browser and go to your ngrok URL. It will look something like this:
+Once Ngrok is running open up your browser and go to your Ngrok URL. It will look something like this:
 
   `http://<sub-domain>.ngrok.io/`
 
@@ -121,9 +122,13 @@ That's it!
   ```
 
 1. Reply with 1.
+
 1. The specified phone for agent 1 will be called:  __agent1-phone__.
+
 1. If __agent1-phone__ is not attended in 30 seconds then __agent2-phone__ will be called.
+
 1. In case the second agent doesn't attend the call, it will be logged as a missed call. You can see all missed calls in the main page of the running server at [http://<sub-domain>.ngrok.io](//localhost:8000).
+
 1. Repeat the process but enter any key different to __1__ to choose Voice.
 
 [twilio-phone-number]: https://www.twilio.com/console/phone-numbers/incoming
