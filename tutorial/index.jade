@@ -8,19 +8,19 @@
       a product, then be connected to a specialist for that product. If no one
       is available our customer's number will be saved so that our agent can
       call them back.
-    
+
       ### This is what the application does at a high level:
 
       * Configure a workspace using the Twilio [TaskRouter REST API][api-
-      main].  
+      main].
       * Listen for incoming calls and let the user select a product
-      with the dial pad.  
+      with the dial pad.
       * Create a Task with the selected product and let
-      TaskRouter handle it.  
+      TaskRouter handle it.
       * Store missed calls so agents can return the
-      call to customers.  
+      call to customers.
       * Redirect users to a voice mail when no one
-      answers the call.  
+      answers the call.
       * Allow agents to change their status
       (Available/Offline) via SMS.
 
@@ -51,7 +51,7 @@
       * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
       * [Workflows][workflows-doc] - Responsible for placing Tasks into Task Queues
       * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
-      
+
       In order to build a client for this API, we need a `TWILIO_ACCOUNT_SID`
       and `TWILIO_AUTH_TOKEN` which you can find on [Twilio
       Console](//www.twilio.com/console). The function `build_client`
@@ -142,7 +142,7 @@
          assigns a Task to a Worker. We will learn how to implement it on the next steps.
       1. `task_reservation_timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
       1. `configuration` which is a set of rules for placing Tasks into Task Queues.
-         The routing configuration will take a Task's attribute and match this with Task
+         The routing configuration will take a Task attribute and match it with Task
          Queues. This application's Workflow rules are defined as:
          1. `"selected_product==\
          "ProgrammableSMS\""` expression for `SMS` Task
