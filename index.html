@@ -18,15 +18,15 @@ call them back.</p>
 <h3 id="this-is-what-the-application-does-at-a-high-level-">This is what the application does at a high level:</h3>
 <ul>
 <li>Configure a workspace using the Twilio [TaskRouter REST API][api-
-main].  </li>
+main].</li>
 <li>Listen for incoming calls and let the user select a product
-with the dial pad.  </li>
+with the dial pad.</li>
 <li>Create a Task with the selected product and let
-TaskRouter handle it.  </li>
+TaskRouter handle it.</li>
 <li>Store missed calls so agents can return the
-call to customers.  </li>
+call to customers.</li>
 <li>Redirect users to a voice mail when no one
-answers the call.  </li>
+answers the call.</li>
 <li>Allow agents to change their status
 (Available/Offline) via SMS.</li>
 </ul>
@@ -116,7 +116,7 @@ as the public URL where a request will be made when this Workflow
 assigns a Task to a Worker. We will learn how to implement it on the next steps.</li>
 <li><code>task_reservation_timeout</code> as the maximum time we want to wait until a Worker is available for handling a Task.</li>
 <li><code>configuration</code> which is a set of rules for placing Tasks into Task Queues.
-The routing configuration will take a Task&#39;s attribute and match this with Task
+The routing configuration will take a Task attribute and match it with Task
 Queues. This application&#39;s Workflow rules are defined as:<ol>
 <li><code>&quot;selected_product==\
 &quot;ProgrammableSMS\&quot;&quot;</code> expression for <code>SMS</code> Task
