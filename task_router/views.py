@@ -3,11 +3,11 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from twilio import twiml
+from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.messaging_response import MessagingResponse
 from .models import MissedCall
 from . import workspace
-from twilio.rest import TwilioRestClient
-from twilio.rest import TwilioTaskRouterClient
+from twilio.rest import Client
 import json
 from . import sms_sender
 try:
@@ -34,14 +34,17 @@ def root(request):
 @csrf_exempt
 def incoming_sms(request):
     """ Changes worker activity and returns a confirmation """
-    client = TwilioTaskRouterClient(ACCOUNT_SID, AUTH_TOKEN)
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
     activity = 'Idle' if request.POST['Body'].lower().strip() == 'on' else 'Offline'
     activity_sid = WORKSPACE_INFO.activities[activity].sid
     worker_sid = WORKSPACE_INFO.workers[request.POST['From']]
     workspace_sid = WORKSPACE_INFO.workspace_sid
 
-    client.workers(workspace_sid).update(worker_sid, activity_sid=activity_sid)
-    resp = twiml.Response()
+    client.workspaces(workspace_sid)\
+          .workers(worker_sid)\
+          .update(activity_sid=activity_sid)
+
+    resp = MessagingResponse()
     message = 'Your status has changed to ' + activity
     resp.message(message)
     return HttpResponse(resp)
@@ -50,20 +53,25 @@ def incoming_sms(request):
 @csrf_exempt
 def incoming_call(request):
     """ Returns TwiML instructions to Twilio's POST requests """
-    resp = twiml.Response()
-    with resp.gather(numDigits=1, action="/call/enqueue", method="POST") as g:
-        g.say("For Programmable SMS, press one. For Voice, press any other key.")
+    resp = VoiceResponse()
+    resp.say("For Programmable SMS, press one. For Voice, press any other key.")
+    resp.gather(numDigits=1, action="/call/enqueue", method="POST")
+
     return HttpResponse(resp)
 
 
 @csrf_exempt
 def enqueue(request):
     """ Parses a selected product, creating a Task on Task Router Workflow """
-    resp = twiml.Response()
+    resp = VoiceResponse()
     digits = request.POST['Digits']
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
-    with resp.enqueue(None, workflowSid=WORKSPACE_INFO.workflow_sid) as e:
-        e.task('{"selected_product": "%s"}' % selected_product)
+    task = '{"selected_product": "%s"}' % selected_product
+
+    resp.enqueue(None,
+                 workflowSid=WORKSPACE_INFO.workflow_sid,
+                 task=task)
+
     return HttpResponse(resp)
 
 
@@ -99,8 +107,12 @@ def events(request):
 def _voicemail(call_sid):
     msg = 'Sorry, All agents are busy. Please leave a message. We will call you as soon as possible'
     route_url = 'http://twimlets.com/voicemail?Email=' + EMAIL + '&Message=' + quote_plus(msg)
-    client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
-    client.calls.route(call_sid, route_url)
+    route_call(call_sid, route_url)
+
+
+def route_call(call_sid, route_url):
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    client.api.calls.route(call_sid, route_url)
 
 
 def _save_missed_call(task_attributes):
