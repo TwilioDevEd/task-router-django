@@ -64,6 +64,11 @@ uses a PostgreSQL database to log phone calls which were not assisted.
    $ pip install -r requirements.txt
    ```
 
+1. Setup your database:
+   ```bash
+   createdb task_router
+   ```
+
 1. Run the migrations.
 
    ```bash

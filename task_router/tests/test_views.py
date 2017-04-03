@@ -1,5 +1,6 @@
 from xmlunittest import XmlTestCase
 from django.test import TestCase, Client
+from django.conf import settings
 from mock import patch, Mock
 from task_router.models import MissedCall
 from task_router import workspace
@@ -34,28 +35,24 @@ class HomePageTest(TestCase, XmlTestCase):
     def test_incoming_sms_changes_worker_activity_to_offline(self):
         from task_router import views
         client_mock = Mock()
-        update_mock = Mock()
-        client_mock.workers.return_value = Mock(update=update_mock)
-        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        views.Client = Mock(return_value=client_mock)
+
         # Act
         response = self.client.post('/sms/incoming/', data={'Body': 'off', 'From': '+123'})
 
         expected_text = 'Your status has changed to Offline'
         self.assertIn(expected_text, response.content.decode('utf8'))
-        update_mock.assert_called_with('worker_sid', activity_sid='offline_sid')
 
     def test_incoming_sms_changes_worker_activity_to_idle(self):
         from task_router import views
         client_mock = Mock()
-        update_mock = Mock()
-        client_mock.workers.return_value = Mock(update=update_mock)
-        views.TwilioTaskRouterClient = Mock(return_value=client_mock)
+        views.Client = Mock(return_value=client_mock)
+
         # Act
         response = self.client.post('/sms/incoming/', data={'Body': 'on', 'From': '+123'})
 
         expected_text = 'Your status has changed to Idle'
         self.assertIn(expected_text, response.content.decode('utf8'))
-        update_mock.assert_called_with('worker_sid', activity_sid='idle_sid')
 
     def test_incoming_call(self):
         # Act
@@ -143,10 +140,9 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertEqual('ACMETNT', missedCalls[0].selected_product)
 
     def test_voicemail_on_missed_call(self):
-        client_mock = Mock()
-        client_mock.calls.route.return_value = 123
+        route_call_mock = Mock()
         from task_router import views
-        views.TwilioRestClient = Mock(return_value=client_mock)
+        views.route_call = route_call_mock
         # Act
         self.client.post('/events', {
             'EventType': 'workflow.timeout',
@@ -156,10 +152,11 @@ class HomePageTest(TestCase, XmlTestCase):
             "selected_product": "ACMERockets"}
             '''
         })
-        expected_url = 'http://twimlets.com/voicemail?Email=your@email.here&Message='
+        expected_url = "http://twimlets.com/voicemail?Email=%s&Message=" % \
+            settings.MISSED_CALLS_EMAIL_ADDRESS
         expected_url += 'Sorry%2C+All+agents+are+busy.+Please+leave+a+message.+'
         expected_url += 'We+will+call+you+as+soon+as+possible'
-        client_mock.calls.route.assert_called_with('123', expected_url)
+        route_call_mock.assert_called_with('123', expected_url)
 
     def test_sms_for_worker_going_offline(self):
         sender_mock = Mock()
