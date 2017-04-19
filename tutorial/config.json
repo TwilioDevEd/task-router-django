@@ -1,0 +1,6 @@
+{
+    "title": "Task Router Django",
+    "repo": "TwilioDevEd/task-router-django",
+    "description": "Give your customers specialized product support. Learn how to use TaskRouter to create a workflow that will redirect users to an appropriate sales agent, based on the product they select.",
+    "heroku": false
+}

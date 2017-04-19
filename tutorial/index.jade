@@ -1,0 +1,302 @@
+.chapter(data-title='TaskRouter Django')
+  .step(data-title='Application Overview', data-file='task_router/urls.py')
+    :markdown
+      ## Application Overview
+
+      In this tutorial we will show how to automate the routing of calls from
+      customers to your support agents. Customers will be able to select a
+      product and wait while TaskRouter tries to contact a product
+      specialist for the best support experience. If no one is available, our
+      application will save the customer's number and selected product so
+      an agent can call them back later on.
+
+      This is what the application does at a high level:
+
+      1. Configure a workspace using the Twilio REST API.
+      1. Listen for incoming calls and let the user select a product with the dial pad.
+      1. Create a Task with the selected product and let TaskRouter handle it.
+      1. Store missed calls so agents can return the call to customers.
+
+      ---
+      **See Also:**
+      * [Getting Started with Django](//www.djangoproject.com/start/)
+      * [Getting Started with Twilio TaskRouter](//www.twilio.com/docs/quickstart/python/taskrouter)
+
+  .step(data-title='Configuring the Workspace', data-file='task_router/workspace.py',
+    data-highlight='14-17,30-97')
+    :markdown
+      ## Configuring the Workspace
+
+      In order to instruct TaskRouter to handle the Tasks, we need to
+      configure a Workspace. This is possible either using the [TaskRouter
+      Console](//www.twilio.com/console/taskrouter/workspaces) or
+      programmatically through [TaskRouter REST API][api-main].
+
+      A [Workspace][workspaces-doc] is the container element for any TaskRouter
+      application. The elements are:
+      * [Tasks][tasks-doc] - Represents a customer trying to contact an agent
+      * [Workers][workers-doc] - The agents responsible for handling Tasks
+      * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
+      * [Workflows][workflows-doc] - Responsible for matching Tasks into Task Queues
+      * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
+      
+      In order to build a client for this API, we need a `TWILIO_ACCOUNT_SID`
+      and `TWILIO_AUTH_TOKEN` which you can find on [Twilio
+      Console](//www.twilio.com/console). The function `build_client`
+      configures and returns a TwilioTaskRouterClient, which is provided by the
+      [Twilio Python library][python-api-doc]. The `create` function uses this
+      client to retrieve/create a new Workspace and returns a `Workspace` class
+      wrapping API calls to populate a Workspace.
+
+      ---
+      **See Also:**
+      * [TaskRouter: REST API Reference][api-main]
+      * [TaskRouter: Python API Documentation][python-api-doc]
+
+      [python-api-doc]: http://twilio-python.readthedocs.io/en/latest/usage/taskrouter.html
+      [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
+      [api-main]: https://www.twilio.com/docs/api/taskrouter/rest-api
+      [workspaces-doc]: https://www.twilio.com/docs/api/taskrouter/workspaces
+      [workflows-doc]: https://www.twilio.com/docs/api/taskrouter/workflows
+      [queues-doc]: https://www.twilio.com/docs/api/taskrouter/taskqueues
+      [tasks-doc]: https://www.twilio.com/docs/api/taskrouter/tasks
+      [workers-doc]: https://www.twilio.com/docs/api/taskrouter/workers
+      [activities-doc]: https://www.twilio.com/docs/api/taskrouter/activities
+
+  .step(data-title='The Create Workspace Command', data-file='task_router/management/commands/create_workspace.py',
+    data-highlight='6-55')
+    :markdown
+      ## The Create Workspace Command
+
+      This application uses the `configure_workspace` [Django
+      Command][django-commands] to orchestrate calls to our `workspace` module
+      in order to configure a Workspace. The command uses data provided by
+      `workspace.json` and the following arguments:
+
+      1. `host` - A public URL which Twilio can send requests. This can be
+         either a cloud service or [ngrok][ngrok-url], which can expose a local
+         application to the internet.
+
+      1. `bob_number` - The telephone number of Bob, the Programmable SMS specialist.
+
+      1. `alice_number` - Same for Alice, the Programmable Voice specialist.
+      
+      First, we parse the JSON file and store in `workspace_json` variable.
+      `workspace_parser` is a simple module to locate and parse our JSON file.
+
+      ---
+      **See Also:**
+      * [Django Management Commands][django-commands]
+      * [TaskRouter Python Quickstart Overview](//www.twilio.com/docs/quickstart/python/taskrouter)
+
+      [django-commands]: https://docs.djangoproject.com/en/1.9/howto/custom-management-commands/#
+
+  .step(data-title='Creating a Workspace', data-file='task_router/workspace.py',
+    data-highlight='25-38')
+    :markdown
+      # Creating a Workspace
+
+      After parsing, we call `workspace.delete` to delete the previous
+      Workspace, if it was already created, and `workspace.create` to create a
+      new one.
+
+  .step(data-title='Creating the Workers', data-file='task_router/workspace.py',
+    data-highlight='47-52')
+    :markdown
+      # Creating the Workers
+
+      Using the JSON and provided parameters, we create the workers Bob and Alice.
+      They each hold two attributes: `contact_uri` with a phone number
+      and `products` with a list of the products which each worker is
+      specialized in.
+
+  .step(data-title='Creating the Task Queues', data-file='task_router/workspace.py',
+    data-highlight='54-63')
+    :markdown
+      # Creating the Task Queues
+
+      Next, we set up the Task Queues using `workspace.add_queue`, each with a
+      `name` and a `targetWorkers`, which is an expression to match Workers.
+      Our Task Queues are:
+
+      1. `SMS` - Will target Workers specialized in Programmable SMS, such
+         as Bob, using the expression `"products HAS \"ProgrammableSMS\""`.
+
+      1. `Voice` - Will do the same for Programmable Voice Workers, such
+         as Alice, using the expression `"products HAS \"ProgrammableVoice\""`.
+
+      1. `Default` - This queue targets all users and can be used when there are
+         no specialist around for the chosen product. We can use the `"1==1"`
+         expression here.
+
+  .step(data-title='Creating a Workflow', data-file='task_router/workspace.py',
+    data-highlight='65-97')
+    :markdown
+      # Creating a Workflow
+
+      Finally, we set up the Workflow with `workspace.add_workflow` using the
+      following parameters:
+
+      1. `name` as the name of a Workflow
+
+      1. `callback` as the public URL where a request will be made when this Workflow
+         assigns a Task to a Worker. We will learn how to implement it on the next steps.
+
+      1. `timeout` as the maximum time we want to wait until a Worker is available for handling a Task.
+
+      1. `routingConfiguration`, which is a set of rules for matching Tasks into Task Queues.
+
+      The routing configuration will take a Task attributes and match with Task
+      Queues. This application's Workflow rules are defined as:
+      1. `"selected_product==\"ProgrammableSMS\""` expression for `SMS` Task
+         Queue. This expression will match any Task with `ProgrammableSMS` as
+         the `selected_product` attribute.
+
+      1. `"selected_product==\"ProgrammableVoice\""` expression for `Voice`
+         Task Queue.
+
+  .step(data-title="Handling Twilio's Request", data-file='task_router/views.py',
+    data-highlight='32-38')
+    :markdown
+      ## Handling Twilio's Request
+
+      Right after receiving a call, Twilio will send a request to the
+      URL specified on the [number's configuration](//www.twilio.com/console/phone-numbers/incoming).
+
+      The endpoint will then process the request and generate a TwiML response.
+      We'll use the Say verb to give the user product alternatives, and a key
+      they can press in order to select one. The Gather verb allows us to
+      capture the user's key press.
+
+      ---
+      **See Also:**
+      * [Twilio webhooks](//www.twilio.com/platform/webhooks)
+      * [TwiML Voice: Your Response](//www.twilio.com/docs/api/twiml/your_response)
+      * [TwiML Voice: <Say> verb](//www.twilio.com/docs/api/twiml/say)
+      * [TwiML Voice: <Gather> verb](//www.twilio.com/docs/api/twiml/gather)
+
+  .step(data-title='Creating a Task', data-file='task_router/views.py',
+    data-highlight='41-49')
+    :markdown
+      ## Creating a Task
+
+      This is the endpoint set as the `action` URL on the `Gather` verb on the
+      previous step. A request is made to this endpoint when the user presses
+      a key during the call.
+      This request has a `Digits` parameter that holds the pressed keys.
+      A `Task` will be created based on the pressed digit with the
+      `selected_product` as an attribute. The Workflow will take this Task's
+      attributes and match with the [configured
+      expressions](https://www.twilio.com/docs/api/taskrouter/expression-syntax)
+      in order to find a Task Queue for this Task, so an appropriate available
+      Worker can be assigned to handle it.
+
+      We use the [`Enqueue` verb][enqueue-verb] with a `WorkflowSid` attribute
+      to [integrate with TaskRouter][integration-doc]. Then the voice call will
+      be put on hold while TaskRouter tries to find an available Worker to
+      handle this Task.
+
+      ---
+      **See Also:**
+      * [TwiML Voice: Twilio's Request](//www.twilio.com/docs/api/twiml/twilio_request)
+      * [TwiML Voice: <Gather> callback attributes](//www.twilio.com/docs/api/twiml/gather#attributes-action-parameters)
+      * [TwiML Voice: <Enqueue> verb][enqueue-verb]
+      * [TaskRouter: Using <Enqueue> to route calls with TaskRouter](//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter)
+      [integration-doc]: //www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter
+      [enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue
+
+  .step(data-title='Assigning a Worker', data-file='task_router/views.py',
+    data-highlight='52-57')
+    :markdown
+      ## Assigning a Worker
+
+      When TaskRouter selects a Worker, it does the following:
+
+      1. The Task's Assignment Status is set to 'reserved'.
+      2. A [Reservation instance][reservation-instance-doc] is generated,
+      linking the Task to the selected Worker.
+      3. At the same time the Reservation is created, a webhook POST request is
+      made to the Workflow's AssignmentCallbackURL, which was configured using
+      the [`configure_workspace`][workspace-command-github] Django command.
+      This request includes the full details of the Task, the selected Worker,
+      and the Reservation.
+
+      Handling this [Assignment Callback][assignment-callback] is a key
+      component of building a TaskRouter application as we can instruct how the
+      Worker will handle a Task. We could send a text, e-mail, push
+      notifications or deliver a call.
+
+      Since we created this Task during a voice call with an `Enqueue` verb,
+      let's [instruct TaskRouter to dequeue][dequeue-section] the call and dial
+      a Worker. If we do not specify a `to` parameter with a
+      phone number, TaskRouter will pick the Worker's `contact_uri` attribute.
+
+      We also send a `post_work_activity_sid` which will tell TaskRouter which
+      [Activity][activities] to assign this worker after the call ends.
+
+      ---
+      **See Also:**
+      * [Assigning Tasks to Workers: Handling Assignment Callbacks][assignment-callback]
+      * [Assigning Tasks to Workers: Dequeue a call from a TwiML queue][dequeue-section]
+      * [TaskRouter Quickstart: Understanding Activities](//www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities)
+
+      [reservation-instance-doc]: //www.twilio.com/docs/api/taskrouter/reservations
+      [workspace-command-github]: https://github.com/TwilioDevEd/task-router-django/blob/master/task_router/management/commands/create_workspace.py
+      [assignment-callback]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks
+      [dequeue-section]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call
+      [activities]: //www.twilio.com/docs/quickstart/python/taskrouter/setup-understanding-activities
+
+  .step(data-title='Collecting Missed Calls', data-file='task_router/views.py',
+    data-highlight='21, 60-80')
+    :markdown
+      ## Collecting Missed Calls
+
+      This endpoint will be called after each [TaskRouter Event][event-types]
+      is triggered. In our application, we are trying to collect missed calls,
+      so we would like to handle the `workflow.timeout` event. This event is
+      triggered when the Task waits more than the limit set on Workflow
+      Configuration, which happens when no available worker is found after
+      trying out all possible Task Queues configured as rules for this
+      Workflow.
+
+      Here we use TwilioRestClient to route this call into a [Voicemail
+      Twimlet][voicemail-twimlet]. Twimlets are tiny web applications for
+      voice.  This one will generate a `TwiML` response using `Say` verb and
+      record a message using `Record` verb. After recorded, the message will be
+      transcribed and sent to the mail address we configured on
+      `MISSED_CALLS_EMAIL_ADDRESS` environment variable.
+
+      Note that we are also listening for `task.canceled`. This is triggered
+      when the customer hangs up before being assigned to an agent, therefore
+      canceling the task. Capturing this event allows us to collect the
+      information from the customers that hang up before the Workflow times out.
+
+      ---
+      **See Also:**
+      * [TaskRouter: Events](//www.twilio.com/docs/api/taskrouter/events)
+      * [TaskRouter: Event types][event-types]
+      * [Twilio Twimlets][twimlets]
+
+      [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
+      [twimlets]: https://www.twilio.com/labs/twimlets
+      [voicemail-twimlet]: https://www.twilio.com/labs/twimlets/voicemail
+  .step
+    :markdown
+      ## Where to Next?
+
+      That's it!
+
+      If you're a Python developer working with
+      Twilio, you might enjoy these other tutorials:
+
+      [**Appointment-Reminders**](//www.twilio.com/docs/tutorials/walkthrough/appointment-reminders/python/django)
+
+      Automate the process of reaching out to your customers prior to an upcoming appointment.
+
+      [**Automated-Survey-Django**](//www.twilio.com/docs/tutorials/walkthrough/automated-survey/python/django)
+
+      Instantly collect structured data from your users with a survey conducted over a call or SMS text messages.
+
+      Thanks for checking this tutorial out! If you have any feedback
+      to share with us, we'd love to hear it.
+      [Contact the Twilio Developer Education Team](mailto:deved-oss@twilio.com) to let us know what you think.
