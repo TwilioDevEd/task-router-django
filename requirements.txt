@@ -13,7 +13,7 @@ whitenoise==2.0.4
 phonenumbers==7.2.7
 
 # Production dependencies
-gunicorn==19.3.0
+gunicorn==19.9.0
 
 # Test dependencies
 coverage==4.0
