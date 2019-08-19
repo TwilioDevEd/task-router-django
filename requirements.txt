@@ -18,7 +18,7 @@ gunicorn==19.3.0
 # Test dependencies
 coverage==4.0
 mock==1.3.0
-model-mommy==1.2.5
+model-mommy==1.6.0
 six==1.9.0
 xmlunittest==0.3.2
 vcrpy==1.8.0
