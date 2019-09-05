@@ -1,11 +1,12 @@
-from xmlunittest import XmlTestCase
-from django.test import TestCase, Client
-from django.conf import settings
-from mock import patch, Mock
-from task_router.models import MissedCall
-from task_router import workspace
-
 import json
+
+from django.conf import settings
+from django.test import Client, TestCase
+from mock import Mock, patch
+from task_router import workspace
+from task_router.models import MissedCall
+from xmlunittest import XmlTestCase
+from task_router import views
 
 
 class HomePageTest(TestCase, XmlTestCase):
@@ -15,10 +16,12 @@ class HomePageTest(TestCase, XmlTestCase):
         self.original = workspace.setup
         setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='workspace_sid'),
                                                                Mock(sid='workflow_sid'),
-                                                               {'Idle': Mock(sid='idle_sid'),
-                                                                'Offline': Mock(sid='offline_sid')},
+                                                               {'Offline': Mock(sid='offline_sid'),
+                                                                'Unavailable': Mock(sid='unavailable_sid'),
+                                                                'Available': Mock(sid='available_sid'),},
                                                                {'+123': 'worker_sid'}))
         workspace.setup = setup_mock
+        views.setup_workspace()
 
     def tearDown(self):
         workspace.setup = self.original
@@ -33,7 +36,6 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertIn('Task Router', str(response.content))
 
     def test_incoming_sms_changes_worker_activity_to_offline(self):
-        from task_router import views
         client_mock = Mock()
         views.Client = Mock(return_value=client_mock)
 
@@ -44,14 +46,13 @@ class HomePageTest(TestCase, XmlTestCase):
         self.assertIn(expected_text, response.content.decode('utf8'))
 
     def test_incoming_sms_changes_worker_activity_to_idle(self):
-        from task_router import views
         client_mock = Mock()
         views.Client = Mock(return_value=client_mock)
 
         # Act
         response = self.client.post('/sms/incoming/', data={'Body': 'on', 'From': '+123'})
 
-        expected_text = 'Your status has changed to Idle'
+        expected_text = 'Your status has changed to Available'
         self.assertIn(expected_text, response.content.decode('utf8'))
 
     def test_incoming_call(self):
@@ -96,7 +97,7 @@ class HomePageTest(TestCase, XmlTestCase):
         content = response.content.decode('utf8')
 
         expected = {"instruction": "dequeue",
-                    "post_work_activity_sid": 'idle_sid'}
+                    "post_work_activity_sid": 'available_sid'}
         self.assertEqual(json.loads(content), expected)
 
     @patch('task_router.views._voicemail')

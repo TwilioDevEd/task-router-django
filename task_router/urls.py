@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 
 from .views import root
 from .views import incoming_call
@@ -9,10 +9,10 @@ from .views import events
 
 urlpatterns = [
     # URLs for handling TaskRouter requests
-    url(r'^$', root, name='root'),
-    url(r'^sms/incoming/?$', incoming_sms, name='incoming_sms'),
-    url(r'^call/incoming/?$', incoming_call, name='incoming_call'),
-    url(r'^call/enqueue/?$', enqueue, name='enqueue'),
-    url(r'^assignment/?$', assignment, name='assignment'),
-    url(r'^events/?$', events, name='events')
+    path('', root, name='root'),
+    path('sms/incoming/', incoming_sms, name='incoming_sms'),
+    path('call/incoming/', incoming_call, name='incoming_call'),
+    path('call/enqueue/', enqueue, name='enqueue'),
+    path('assignment/', assignment, name='assignment'),
+    path('events/', events, name='events')
 ]

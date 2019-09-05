@@ -1,22 +1,23 @@
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-from twilio.twiml.voice_response import VoiceResponse
-from twilio.twiml.messaging_response import MessagingResponse
-from .models import MissedCall
-from . import workspace
-from twilio.rest import Client
 import json
-from . import sms_sender
-try:
-    from urllib import quote_plus
-except:
-    # PY3
-    from urllib.parse import quote_plus
+from urllib.parse import quote_plus
 
-WORKSPACE_INFO = workspace.setup()
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
+from twilio.twiml.voice_response import VoiceResponse
+
+from . import sms_sender, workspace
+from .models import MissedCall
+
+if not getattr(settings, 'TESTING', False):
+    WORKSPACE_INFO = workspace.setup()
+else:
+    WORKSPACE_INFO = None
+
 ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 TWILIO_NUMBER = settings.TWILIO_NUMBER
@@ -35,7 +36,7 @@ def root(request):
 def incoming_sms(request):
     """ Changes worker activity and returns a confirmation """
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
-    activity = 'Idle' if request.POST['Body'].lower().strip() == 'on' else 'Offline'
+    activity = 'Available' if request.POST['Body'].lower().strip() == 'on' else 'Offline'
     activity_sid = WORKSPACE_INFO.activities[activity].sid
     worker_sid = WORKSPACE_INFO.workers[request.POST['From']]
     workspace_sid = WORKSPACE_INFO.workspace_sid
@@ -54,8 +55,8 @@ def incoming_sms(request):
 def incoming_call(request):
     """ Returns TwiML instructions to Twilio's POST requests """
     resp = VoiceResponse()
-    resp.say("For Programmable SMS, press one. For Voice, press any other key.")
-    resp.gather(numDigits=1, action="/call/enqueue", method="POST")
+    gather = resp.gather(numDigits=1, action=reverse('enqueue'), method="POST")
+    gather.say("For Programmable SMS, press one. For Voice, press any other key.")
 
     return HttpResponse(resp)
 
@@ -66,11 +67,10 @@ def enqueue(request):
     resp = VoiceResponse()
     digits = request.POST['Digits']
     selected_product = 'ProgrammableSMS' if digits == '1' else 'ProgrammableVoice'
-    task = '{"selected_product": "%s"}' % selected_product
+    task = {'selected_product': selected_product}
 
-    resp.enqueue(None,
-                 workflowSid=WORKSPACE_INFO.workflow_sid,
-                 task=task)
+    enqueue = resp.enqueue(None, workflowSid=WORKSPACE_INFO.workflow_sid)
+    enqueue.task(json.dumps(task))
 
     return HttpResponse(resp)
 
@@ -78,8 +78,8 @@ def enqueue(request):
 @csrf_exempt
 def assignment(request):
     """ Task assignment """
-    response = {"instruction": "dequeue",
-                "post_work_activity_sid": WORKSPACE_INFO.post_work_activity_sid}
+    response = {'instruction': 'dequeue',
+                'post_work_activity_sid': WORKSPACE_INFO.post_work_activity_sid}
     return JsonResponse(response)
 
 
@@ -94,7 +94,8 @@ def events(request):
     if event_type in task_events:
         task_attributes = json.loads(POST['TaskAttributes'])
         _save_missed_call(task_attributes)
-        _voicemail(task_attributes['call_sid'])
+        if event_type == 'workflow.timeout':
+            _voicemail(task_attributes['call_sid'])
     elif event_type == worker_event and POST['WorkerActivityName'] == 'Offline':
         message = 'Your status has changed to Offline. Reply with '\
             '"On" to get back Online'
@@ -112,10 +113,16 @@ def _voicemail(call_sid):
 
 def route_call(call_sid, route_url):
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
-    client.api.calls.route(call_sid, route_url)
+    client.api.calls(call_sid).update(url=route_url)
 
 
 def _save_missed_call(task_attributes):
     MissedCall.objects.create(
             phone_number=task_attributes['from'],
             selected_product=task_attributes['selected_product'])
+
+
+# Only used by the tests in order to patch requests before any call is made
+def setup_workspace():
+    global WORKSPACE_INFO
+    WORKSPACE_INFO = workspace.setup()
