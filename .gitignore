@@ -18,6 +18,7 @@ venv/
 
 # SQLite
 *.sqlite
+*.sqlite3
 
 # Distribution / packaging
 .Python
