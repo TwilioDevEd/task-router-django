@@ -55,7 +55,7 @@ def create_workspace(client):
     try:
         workspace = first(client.taskrouter.workspaces.list(friendly_name=WORKSPACE_NAME))
         client.taskrouter.workspaces(workspace.sid).delete()
-    except:
+    except Exception:
         pass
 
     events_callback = HOST + '/events/'

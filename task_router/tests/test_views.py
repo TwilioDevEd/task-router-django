@@ -14,12 +14,18 @@ class HomePageTest(TestCase, XmlTestCase):
     def setUp(self):
         self.client = Client()
         self.original = workspace.setup
-        setup_mock = Mock(return_value=workspace.WorkspaceInfo(Mock(sid='workspace_sid'),
-                                                               Mock(sid='workflow_sid'),
-                                                               {'Offline': Mock(sid='offline_sid'),
-                                                                'Unavailable': Mock(sid='unavailable_sid'),
-                                                                'Available': Mock(sid='available_sid'),},
-                                                               {'+123': 'worker_sid'}))
+        setup_mock = Mock(
+            return_value=workspace.WorkspaceInfo(
+                Mock(sid='workspace_sid'),
+                Mock(sid='workflow_sid'),
+                {
+                    'Offline': Mock(sid='offline_sid'),
+                    'Unavailable': Mock(sid='unavailable_sid'),
+                    'Available': Mock(sid='available_sid'),
+                },
+                {'+123': 'worker_sid'}
+            )
+        )
         workspace.setup = setup_mock
         views.setup_workspace()
 
