@@ -2,11 +2,14 @@ language: python
 python:
   - '3.6'
   - '3.7'
+service:
+  - postgresql
 install:
   - pip install -r requirements.txt
   - pip install coveralls
 before_script:
   - flake8 .
+  - psql -c 'create database task_router;' -U postgres
 script: coverage run --source=task_router manage.py test --settings=twilio_sample_project.settings.test
 env:
   - TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXX TWILIO_AUTH_TOKEN=YYYYYYYYYYYYYYYYYY TWILIO_NUMBER=+15555555555
