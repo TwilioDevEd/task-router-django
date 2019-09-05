@@ -12,11 +12,11 @@ basically a call center created with the Task Router API of Twilio. This example
 uses a PostgreSQL database to log phone calls which were not assisted.
 
 
-[Read the full tutorial here](//www.twilio.com/docs/tutorials/walkthrough/task-router/python/django)
+[Read the full tutorial here](https://www.twilio.com/docs/taskrouter/tutorials/dynamic-call-center-python-django)
 
 ### Prerequisites
 
-1. [Python [2.7, 3.4]](https://www.python.org/downloads/) installed in your operative system.
+1. [Python [3.6+]](https://www.python.org/downloads/) installed in your operative system.
 1. A Twilio account with a verified [phone number][twilio-phone-number]. (Get a
    [free account](https://www.twilio.com/try-twilio?utm_campaign=tutorials&utm_medium=readme)
    here.) If you are using a Twilio Trial Account, you can learn all about it
@@ -34,10 +34,10 @@ uses a PostgreSQL database to log phone calls which were not assisted.
 
 1. Create a new virtual environment.
 
-   - If using vanilla [virtualenv](https://virtualenv.pypa.io/en/latest/):
+   - If using vanilla with Python 3 [virtualenv](https://docs.python.org/3/library/venv.html):
 
        ```bash
-       virtualenv venv
+       python -m venv venv
        source venv/bin/activate
        ```
 
@@ -47,16 +47,7 @@ uses a PostgreSQL database to log phone calls which were not assisted.
        mkvirtualenv task-router-django
        ```
 
-1. Setup your configuration in your local environment.
-
-   You can use the `.env.example` in a Unix based operative system with the
-   `source` command to load the variables into your environment:
-
-   ```bash
-   $ source .env.example
-   ```
-
-   Otherwise load them manually.
+1. Copy the `.env_example` file to `.env`, and edit it to include your Twilio API credentials 
 
 1. Install the required dependencies, contained in `requirements.txt`.
 
@@ -109,7 +100,7 @@ uses a PostgreSQL database to log phone calls which were not assisted.
    **Voice** should look something like this:
 
    ```
-   http://<sub-domain>.ngrok.io/call/incoming
+   http://<sub-domain>.ngrok.io/call/incoming/
    ```
 
    ![Configure SMS](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
