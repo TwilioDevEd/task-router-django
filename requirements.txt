@@ -13,7 +13,7 @@ phonenumbers==8.10.17
 python-dotenv==0.10.3
 
 # Production dependencies
-gunicorn==19.9.0
+gunicorn==20.0.2
 
 # Test dependencies
 coverage==4.5.4
