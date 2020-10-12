@@ -9,7 +9,7 @@ Django==2.2.5
 # Third-party app dependencies
 twilio==6.30.0
 whitenoise==4.1.3
-phonenumbers==8.10.17
+phonenumbers==8.12.11
 python-dotenv==0.10.3
 
 # Production dependencies
