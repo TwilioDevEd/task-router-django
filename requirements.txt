@@ -10,7 +10,7 @@ Django==2.2.5
 twilio==6.30.0
 whitenoise==4.1.3
 phonenumbers==8.10.17
-python-dotenv==0.10.3
+python-dotenv==0.15.0
 
 # Production dependencies
 gunicorn==19.9.0
