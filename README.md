@@ -4,7 +4,7 @@
 
 # Task Router - Python/Django
 
-[![Build Status](https://travis-ci.org/TwilioDevEd/task-router-django.svg?branch=master)](https://travis-ci.org/TwilioDevEd/task-router-django)
+[![Build and test](https://github.com/TwilioDevEd/task-router-django/actions/workflows/build_test.yml/badge.svg)](https://github.com/TwilioDevEd/task-router-django/actions/workflows/build_test.yml)
 
 Use Twilio to provide your user with multiple options through phone calls, so
 they can be assisted by an agent specialized in the chosen topic. This is
