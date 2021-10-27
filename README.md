@@ -104,6 +104,11 @@ uses a PostgreSQL database to log phone calls which were not assisted.
    ```
 
    ![Configure SMS](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
+### Use Production Environment
+
+Follow previous guide and in step 3 do:
+
+1. Copy the `.env.production.example` file to `.env` and add your `DJANGO_SECRET_KEY`
 
 ## How to Demo
 
