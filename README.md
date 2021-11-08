@@ -104,6 +104,8 @@ uses a PostgreSQL database to log phone calls which were not assisted.
    ```
 
    ![Configure SMS](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
+
+*Note:* To enable debug logs in local environment, set the `DEBUG` variable to `True` in the `local.py` file
 ### Use Production Environment
 
 Follow previous guide and in step 3 do:
