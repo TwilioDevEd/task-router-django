@@ -148,3 +148,5 @@ MESSAGE_TAGS = {
 
 # Redirect login to /support/dashboard
 LOGIN_REDIRECT_URL = '/support/dashbaord'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
