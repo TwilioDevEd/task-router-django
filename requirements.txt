@@ -1,7 +1,7 @@
 # Requirements for browser-calls-django
 
 # Linter
-flake8==3.7.8
+flake8==6.1.0
 
 # Django Framework
 Django==3.2.0
