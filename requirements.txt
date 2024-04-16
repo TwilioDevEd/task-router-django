@@ -21,3 +21,4 @@ mock==3.0.5
 model-mommy==1.6.0
 xmlunittest==0.5.0
 vcrpy==2.1.0
+sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
