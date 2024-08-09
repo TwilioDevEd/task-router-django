@@ -4,7 +4,7 @@
 flake8==3.7.8
 
 # Django Framework
-Django==3.2.0
+Django==3.2.24
 
 # Third-party app dependencies
 twilio==6.30.0
@@ -21,3 +21,5 @@ mock==3.0.5
 model-mommy==1.6.0
 xmlunittest==0.5.0
 vcrpy==2.1.0
+sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
